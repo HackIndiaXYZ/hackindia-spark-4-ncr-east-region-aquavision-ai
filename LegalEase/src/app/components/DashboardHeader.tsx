@@ -5,11 +5,20 @@ import { ChevronDown } from "lucide-react";
 interface DashboardHeaderProps {
   filename?: string;
   onReset?: () => void;
+  targetLanguage?: string;
+  onLanguageChange?: (lang: string) => void;
+  isTranslating?: boolean;
 }
 
-export function DashboardHeader({ filename, onReset }: DashboardHeaderProps) {
+export function DashboardHeader({
+  filename,
+  onReset,
+  targetLanguage = "en",
+  onLanguageChange,
+  isTranslating = false,
+}: DashboardHeaderProps) {
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 h-14 border-b border-border bg-white shadow-sm md:h-16">
+    <header className="fixed left-0 right-0 top-0 z-50 h-14 border-b border-border bg-white shadow-sm md:h-16 print:hidden">
       <div className="flex h-full items-center justify-between px-4 md:px-6">
         {/* Logo */}
         <div className="flex items-center gap-2">
@@ -44,8 +53,12 @@ export function DashboardHeader({ filename, onReset }: DashboardHeaderProps) {
           )}
 
           {/* Language Switcher */}
-          <Select.Root defaultValue="en">
-            <Select.Trigger className="flex items-center gap-1.5 rounded-lg border border-border bg-white px-2 py-1.5 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring md:px-3 md:py-2">
+          <Select.Root
+            value={targetLanguage}
+            onValueChange={onLanguageChange}
+            disabled={isTranslating}
+          >
+            <Select.Trigger className="flex items-center gap-1.5 rounded-lg border border-border bg-white px-2 py-1.5 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 md:px-3 md:py-2">
               <Globe className="h-4 w-4 text-muted-foreground" />
               <Select.Value />
               <ChevronDown className="h-3 w-3 text-muted-foreground" />
@@ -82,8 +95,17 @@ export function DashboardHeader({ filename, onReset }: DashboardHeaderProps) {
             </Select.Portal>
           </Select.Root>
 
+          {isTranslating && (
+            <span className="hidden text-xs text-muted-foreground animate-pulse md:inline-block">
+              Translating...
+            </span>
+          )}
+
           {/* Export Report Button - hidden on mobile */}
-          <button className="hidden items-center gap-2 rounded-lg border border-border bg-white px-3 py-2 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring md:flex">
+          <button
+            onClick={() => window.print()}
+            className="hidden items-center gap-2 rounded-lg border border-border bg-white px-3 py-2 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring md:flex"
+          >
             <Download className="h-4 w-4" />
             <span>Export Report</span>
           </button>

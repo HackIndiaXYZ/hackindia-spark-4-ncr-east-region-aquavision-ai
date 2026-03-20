@@ -19,6 +19,17 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
     onUpload(file);
   };
 
+  const handleDemoClick = () => {
+    // Creating a dummy file that isn't a real PDF will intentionally fail
+    // the pdf-parse library on the backend, cleanly triggering the demo fallback.
+    const demoFile = new File(
+      ["dummy content"],
+      "Acme_Corp_Service_Agreement.pdf",
+      { type: "application/pdf" }
+    );
+    onUpload(demoFile);
+  };
+
   return (
     <div className="flex h-full w-full items-center justify-center p-4 md:p-8">
       <input
@@ -59,13 +70,23 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
           </p>
         </div>
 
-        <button
-          onClick={() => inputRef.current?.click()}
-          className="rounded-lg border border-border bg-white px-6 py-2.5 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
-          style={{ fontWeight: 500 }}
-        >
-          Browse Files
-        </button>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <button
+            onClick={() => inputRef.current?.click()}
+            className="rounded-lg border border-border bg-white px-6 py-2.5 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
+            style={{ fontWeight: 500 }}
+          >
+            Browse Files
+          </button>
+          
+          <button
+            onClick={handleDemoClick}
+            className="rounded-lg border border-indigo-200 bg-indigo-50 px-6 py-2.5 text-[#4f46e5] transition-colors hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-[#4f46e5] focus:ring-offset-2"
+            style={{ fontWeight: 500 }}
+          >
+            Try Demo Contract
+          </button>
+        </div>
       </div>
     </div>
   );

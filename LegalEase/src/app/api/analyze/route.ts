@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getDemoAnalysis } from "@/lib/demo-analysis";
+import { getGeminiFallbackMessage } from "@/lib/server/gemini-runtime";
 import { analyzeContractTextWithGemini } from "@/lib/server/gemini-contract-analysis";
 import { extractPdfText } from "@/lib/server/extract-pdf-text";
 
@@ -33,12 +34,14 @@ export async function POST(request: Request) {
       data: analysis,
     });
   } catch (error) {
-    console.error("Falling back to demo analysis:", error);
+    const fallbackReason = getGeminiFallbackMessage(error, "analysis");
+    console.warn(fallbackReason);
 
     return NextResponse.json({
       ok: true,
       mode: "demo",
       data: getDemoAnalysis(documentName),
+      fallbackReason,
     });
   }
 }

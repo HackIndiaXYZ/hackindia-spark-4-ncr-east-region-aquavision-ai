@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { analyzeDocument } from "@/lib/analyze-document";
+import { translateDocument } from "@/lib/translate-document";
 import type { AnalysisResult } from "@/types/analysis";
 
 import { AnalysisLoadingState } from "./components/AnalysisLoadingState";
@@ -45,9 +46,12 @@ function deriveHighlights(analysis: AnalysisResult | null) {
 
 export default function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [originalAnalysis, setOriginalAnalysis] = useState<AnalysisResult | null>(null);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [analysisMode, setAnalysisMode] = useState<"demo" | "live" | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [targetLanguage, setTargetLanguage] = useState("en");
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"document" | "analysis">("document");
   const [activeHighlight, setActiveHighlight] = useState<string | undefined>();
@@ -63,8 +67,10 @@ export default function App() {
     }
 
     setSelectedFile(file);
+    setOriginalAnalysis(null);
     setAnalysis(null);
     setAnalysisMode(null);
+    setTargetLanguage("en");
     setError(null);
     setActiveHighlight(undefined);
     setActiveTab("document");
@@ -72,6 +78,7 @@ export default function App() {
 
     try {
       const result = await analyzeDocument(file);
+      setOriginalAnalysis(result.data);
       setAnalysis(result.data);
       setAnalysisMode(result.mode);
     } catch (analysisError) {
@@ -86,14 +93,41 @@ export default function App() {
     }
   };
 
+  const handleLanguageChange = async (lang: string) => {
+    setTargetLanguage(lang);
+    if (!originalAnalysis) return;
+
+    // Reset error if switching languages
+    setError(null);
+    setIsTranslating(true);
+
+    try {
+      const result = await translateDocument(
+        originalAnalysis,
+        lang as "en" | "hi" | "ta" | "te"
+      );
+      setAnalysis(result.data);
+      // We keep the original analysis mode (whether it was demo or live)
+    } catch (err) {
+      console.error("Translation error:", err);
+      // On error, we could show a toast, but for now we just fallback to the previous state
+      setError("Failed to translate the document. Please try again.");
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
   const handleReset = () => {
     setSelectedFile(null);
+    setOriginalAnalysis(null);
     setAnalysis(null);
     setAnalysisMode(null);
+    setTargetLanguage("en");
     setError(null);
     setActiveHighlight(undefined);
     setActiveTab("document");
     setIsAnalyzing(false);
+    setIsTranslating(false);
   };
 
   const handleViewInDocument = (clauseId: string) => {
@@ -117,22 +151,25 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="flex h-screen flex-col overflow-hidden print:h-auto print:overflow-visible">
       <DashboardHeader
         filename={
           hasDocument ? analysis?.documentName || selectedFile?.name : undefined
         }
         onReset={handleReset}
+        targetLanguage={targetLanguage}
+        onLanguageChange={handleLanguageChange}
+        isTranslating={isTranslating}
       />
 
       {showResults && (
-        <div className="mt-14 flex-shrink-0 md:mt-16">
+        <div className="mt-14 flex-shrink-0 md:mt-16 print:hidden">
           <MobileTabSwitcher activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       )}
 
       <div
-        className="flex flex-1 overflow-hidden"
+        className="flex flex-1 overflow-hidden print:overflow-visible print:block print:h-auto"
         style={{ marginTop: showResults ? "0" : "3.5rem" }}
       >
         {isAnalyzing && (
@@ -156,8 +193,8 @@ export default function App() {
         )}
 
         {showResults && !isAnalyzing && (
-          <div className="hidden h-full w-full md:flex">
-            <div className="h-full w-[55%] border-r border-border">
+          <div className="hidden h-full w-full md:flex print:block print:h-auto print:w-full">
+            <div className="h-full w-[55%] border-r border-border print:hidden">
               <PDFViewer
                 highlights={highlights}
                 activeHighlight={activeHighlight}
@@ -165,7 +202,7 @@ export default function App() {
               />
             </div>
 
-            <div className="h-full w-[45%]">
+            <div className="h-full w-[45%] print:w-full print:h-auto print:block">
               <RiskAnalysisPanel
                 analysis={analysis}
                 analysisMode={analysisMode}

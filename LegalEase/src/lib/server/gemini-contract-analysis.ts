@@ -1,13 +1,12 @@
 import {
-  GoogleGenerativeAI,
   SchemaType,
   type ResponseSchema,
 } from "@google/generative-ai";
 
+import { withGeminiModelFallback } from "@/lib/server/gemini-runtime";
 import type { AnalysisResult, RiskCard, RiskLevel } from "@/types/analysis";
 
-const DEFAULT_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash";
-const GEMINI_TIMEOUT_MS = 15000;
+const GEMINI_TIMEOUT_MS = 30_000;
 const MAX_PROMPT_CHARS = 18000;
 
 const analysisResponseSchema = {
@@ -71,8 +70,8 @@ function clampScore(value: unknown) {
     typeof value === "number"
       ? value
       : typeof value === "string"
-      ? Number.parseFloat(value)
-      : 0;
+        ? Number.parseFloat(value)
+        : 0;
 
   return Math.max(0, Math.min(100, Math.round(numericValue || 0)));
 }
@@ -175,49 +174,27 @@ export async function analyzeContractTextWithGemini(
   documentName: string,
   contractText: string,
 ) {
-  const apiKey = process.env.GEMINI_API_KEY;
-
-  if (!apiKey) {
-    throw new Error("GEMINI_API_KEY is not configured.");
-  }
-
   if (!contractText.trim()) {
     throw new Error("No contract text was extracted from the PDF.");
   }
 
-  const client = new GoogleGenerativeAI(apiKey);
-  const model = client.getGenerativeModel({
-    model: DEFAULT_MODEL,
-    generationConfig: {
-      temperature: 0.2,
-      maxOutputTokens: 2048,
-      responseMimeType: "application/json",
-      responseSchema: analysisResponseSchema,
-    },
-  });
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => {
-    controller.abort();
-  }, GEMINI_TIMEOUT_MS);
-
-  try {
-    const excerpt = prepareContractExcerpt(contractText);
-    const prompt = `
-You are Legal-Ease, an AI contract risk analyzer for hackathon demo use.
+  const excerpt = prepareContractExcerpt(contractText);
+  const prompt = `
+You are Legal-Ease, an AI contract risk analyzer built for Indian users.
 
 Analyze the extracted contract text and return JSON only.
-Use the exact schema.
+Use the exact schema provided.
 Keep the summary concise and plain-English.
 Use conservative scoring.
+Consider Indian legal context (Indian Contract Act 1872, IT Act 2000, Consumer Protection Act 2019) where relevant.
 Do not mention missing context unless it affects confidence.
 Do not wrap the JSON in markdown.
 
 Scoring rules:
-- riskScore: 0 to 100
-- confidenceScore: 0 to 100
-- risks: 3 to 6 concise items when possible
-- consequences: short real-world business or legal impacts
+- riskScore: 0 (safe) to 100 (very risky)
+- confidenceScore: 0 to 100 (how confident you are in the analysis)
+- risks: return 3 to 6 concise items
+- consequences: short real-world business or legal impacts in plain English
 
 Document name: ${documentName}
 
@@ -225,15 +202,23 @@ Extracted contract text:
 ${excerpt}
 `.trim();
 
-    const result = await model.generateContent(prompt, {
-      timeout: GEMINI_TIMEOUT_MS,
-      signal: controller.signal,
-    });
-    const responseText = result.response.text();
-    const parsed = JSON.parse(responseText);
+  const parsed = await withGeminiModelFallback("analysis", async (client, modelName) => {
+    const model = client.getGenerativeModel(
+      {
+        model: modelName,
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 2048,
+          responseMimeType: "application/json",
+          responseSchema: analysisResponseSchema,
+        },
+      },
+      { timeout: GEMINI_TIMEOUT_MS },
+    );
 
-    return normalizeAnalysisPayload(documentName, parsed);
-  } finally {
-    clearTimeout(timeoutId);
-  }
+    const result = await model.generateContent(prompt);
+    return JSON.parse(result.response.text().trim());
+  });
+
+  return normalizeAnalysisPayload(documentName, parsed);
 }
