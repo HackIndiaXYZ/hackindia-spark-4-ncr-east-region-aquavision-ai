@@ -33,31 +33,31 @@ export function ClauseCard({
   };
 
   const t = {
-    whatThisMeans: getStr("What this means:", "इसका क्या मतलब है:", "इसका क्या मतलब है:", "આનો અર્થ શું છે:", "இதன் பொருள் என்ன:", "దీని అర్థం ఏమిటి:"),
-    warning: getStr("Warning: Real-world consequence", "चेतावनी: वास्तविक दुनिया का परिणाम", "चेतावनी: वास्तविक दुनिया का परिणाम", "ચેતવણી: વાસ્તવિક દુનિયાનું પરિણામ", "எச்சரிக்கை: நிஜ உலக விளைவு", "హెచ్చరిక: వాస్తవ ప్రపంచ పరిణామం"),
-    technical: getStr("Technical:", "तकनीकी:", "तकनीकी:", "તકનીકી:", "தொழில்நுட்பம்:", "సాంకేతిక:"),
-    viewInDoc: getStr("View in Document", "दस्तावेज़ में देखें", "दस्तावेज़ में देखें", "દસ્તાવેજમાં જુઓ", "ஆவணத்தில் காண்க", "పత్రంలో చూడండి")
+    whatThisMeans: getStr("What this means:", "इसका क्या मतलब है:", "Iska kya matlab hai:", "આનો અર્થ શું છે:", "இதன் பொருள் என்ன:", "దీని అర్థం ఏమిటి:"),
+    warning: getStr("Warning: Real-world consequence", "चेतावनी: वास्तविक दुनिया का परिणाम", "Warning: Asli duniya mein asar", "ચેતવણી: વાસ્તવિક દુનિયાનું પરિણામ", "எச்சரிக்கை: நிஜ உலக விளைவு", "హెచ్చరిక: వాస్తవ ప్రపంచ పరిణామం"),
+    technical: getStr("Technical:", "तकनीकी:", "Technical:", "તકનીકી:", "தொழில்நுட்பம்:", "సాంకేతిక:"),
+    viewInDoc: getStr("View in Document", "दस्तावेज़ में देखें", "Document mein dekhein", "દસ્તાવેજમાં જુઓ", "ஆவணத்தில் காண்க", "పత్రంలో చూడండి")
   };
 
   const severityConfig = {
     critical: {
       border: "border-l-[#ef4444]",
       badge: "bg-red-100 text-[#ef4444]",
-      label: getStr("Critical Risk", "महत्वपूर्ण जोखिम", "महत्वपूर्ण जोखिम", "ગંભીર જોખમ", "முக்கியமான அபாயம்", "క్లిష్టమైన ప్రమాదం"),
+      label: getStr("Critical Risk", "महत्वपूर्ण जोखिम", "Critical Risk", "ગંભીર જોખમ", "முக்கியமான அபாயம்", "క్లిష్టమైన ప్రమాదం"),
       icon: "🔴",
       iconBg: "bg-red-100",
     },
     moderate: {
       border: "border-l-[#f59e0b]",
       badge: "bg-amber-100 text-[#f59e0b]",
-      label: getStr("Moderate Risk", "मध्यम जोखिम", "मध्यम जोखिम", "મધ્યમ જોખમ", "மிதமான அபாயம்", "మితమైన ప్రమాదం"),
+      label: getStr("Moderate Risk", "मध्यम जोखिम", "Moderate Risk", "મધ્યમ જોખમ", "மிதமான அபாயம்", "మితమైన ప్రమాదం"),
       icon: "🟡",
       iconBg: "bg-amber-100",
     },
     informational: {
       border: "border-l-[#3b82f6]",
       badge: "bg-blue-100 text-[#3b82f6]",
-      label: getStr("Review Recommended", "समीक्षा की सिफारिश की गई", "समीक्षा की सिफारिश की गई", "સમીક્ષાની ભલામણ કરવામાં આવે છે", "மதிப்பாய்வு பரிந்துரைக்கப்படுகிறது", "సమీక్ష సిఫార్సు చేయబడింది"),
+      label: getStr("Review Recommended", "समीक्षा की सिफारिश की गई", "Review Recommended", "સમીક્ષાની ભલામણ કરવામાં આવે છે", "மதிப்பாய்வு பரிந்துரைக்கப்படுகிறது", "సమీక్ష సిఫార్సు చేయబడింది"),
       icon: "🟢",
       iconBg: "bg-blue-100",
     },

@@ -51,8 +51,7 @@ ${payloadStr}
     return parsed as AnalysisResult;
   });
 }
-// Fallback logic for demo
-const demoHindiTranslation: AnalysisResult = {
+const demoHinglishTranslation: AnalysisResult = {
   documentName: "service-agreement.pdf",
   summary: "Humein is contract mein kuch tricky cheezein mili hain. Yeh aapse bahut risk lene ko kehta hai, time se pehle contract chhodna mushkil banata hai, aur agar payment late hui toh heavy penalty lag sakti hai.",
   riskScore: 78,
@@ -91,6 +90,48 @@ const demoHindiTranslation: AnalysisResult = {
     "Kisi jhagde mein unexpected kharcha aa sakta hai",
     "Contract jaldi khatam hone se kaam ruk sakta hai",
     "Late payment fees se aapka financial nuksan ho sakta hai"
+  ]
+};
+
+const demoHindiTranslation: AnalysisResult = {
+  documentName: "service-agreement.pdf",
+  summary: "हमें इस अनुबंध में कुछ जटिल चीजें मिली हैं। यह आपसे बहुत अधिक जोखिम लेने के लिए कहता है, समय से पहले अनुबंध छोड़ना मुश्किल बनाता है, और यदि भुगतान देर से होता है तो भारी जुर्माना लग सकता है।",
+  riskScore: 78,
+  confidenceScore: 91,
+  risks: [
+    {
+      id: "liability-1",
+      title: "शायद आपको सब कुछ भुगतान करना पड़े",
+      level: "high",
+      description: "कंपनी ने अपना नुकसान तो सीमित कर दिया है, लेकिन आपको कोई सुरक्षा नहीं दी है।",
+      consequence: "अगर कोई बड़ी समस्या होती है, तो आपको एक बड़ा बिल भुगतान करना पड़ सकता है, चाहे आपकी पूरी गलती न भी हो।"
+    },
+    {
+      id: "term-1",
+      title: "अनुबंध छोड़ने के लिए बहुत कम समय",
+      level: "medium",
+      description: "अनुबंध आपको नोटिस देने के लिए बहुत छोटी अवधि देता है, जिससे नया इंतजाम करना मुश्किल हो सकता है।",
+      consequence: "अगर अनुबंध अचानक खत्म हो गया, तो आपका काम रुक सकता है जब तक आप नई कंपनी नहीं ढूंढ लेते।"
+    },
+    {
+      id: "payment-1",
+      title: "देर से भुगतान पर भारी जुर्माना",
+      level: "medium",
+      description: "अगर भुगतान में देरी हुई तो ब्याज दर बहुत अधिक है, जो कि सामान्य व्यावसायिक नियमों के हिसाब से सही नहीं है।",
+      consequence: "थोड़ी सी भी भुगतान देरी होने पर आपका बिल बहुत जल्दी बढ़ सकता है।"
+    },
+    {
+      id: "ip-1",
+      title: "संपत्ति का मालिक कौन होगा, यह स्पष्ट नहीं है",
+      level: "low",
+      description: "अनुबंध इस बात पर स्पष्ट नहीं है कि पहले से बनाई हुई चीजें किसकी हैं और नई बनाई हुई चीजें किसकी हैं।",
+      consequence: "आगे चलकर इस बात पर झगड़ा हो सकता है कि संपत्ति किसकी है, जिससे आपका भविष्य का काम जटिल हो सकता है।"
+    }
+  ],
+  consequences: [
+    "किसी झगड़े में अप्रत्याशित खर्च आ सकता है",
+    "अनुबंध जल्दी खत्म होने से काम रुक सकता है",
+    "देर से भुगतान शुल्क से आपका वित्तीय नुकसान हो सकता है"
   ]
 };
 
@@ -137,8 +178,16 @@ const demoGujaratiTranslation: AnalysisResult = {
 };
 
 export function getDemoTranslation(analysis: AnalysisResult, targetLanguage: "hi" | "hinglish" | "gu" | "ta" | "te"): AnalysisResult {
-  if (targetLanguage === "hinglish" || targetLanguage === "hi") {
-    // Return hindi/hinglish translation but keep the user's risk scores and document name just in case they're different
+  if (targetLanguage === "hinglish") {
+    return {
+      ...demoHinglishTranslation,
+      documentName: analysis.documentName,
+      riskScore: analysis.riskScore,
+      confidenceScore: analysis.confidenceScore,
+    };
+  }
+  
+  if (targetLanguage === "hi") {
     return {
       ...demoHindiTranslation,
       documentName: analysis.documentName,
