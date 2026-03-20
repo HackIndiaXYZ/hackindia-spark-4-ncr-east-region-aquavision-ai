@@ -153,7 +153,7 @@ export function RiskAnalysisPanel({
         )}
 
         <div className="border-b border-border bg-white p-4 md:p-6">
-          <RiskIndicatorBar score={analysis.riskScore} animate={showAnimations} />
+          <RiskIndicatorBar score={analysis.riskScore} animate={showAnimations} targetLanguage={targetLanguage} />
         </div>
 
         <div className="border-b border-border bg-white px-4 py-3 md:px-6 md:py-4">

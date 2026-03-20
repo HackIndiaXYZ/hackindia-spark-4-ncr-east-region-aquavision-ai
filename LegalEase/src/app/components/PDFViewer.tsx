@@ -70,50 +70,46 @@ export function PDFViewer({
     }
   };
 
-  if (pdfUrl) {
-    return (
-      <div className="h-full w-full bg-[#323639] md:p-4">
-        <object
-          data={`${pdfUrl}#toolbar=0&navpanes=0`}
-          type="application/pdf"
-          className="h-full w-full shadow-lg md:rounded-lg"
-        >
-          <div className="flex h-full items-center justify-center bg-gray-100 p-8 text-center text-muted-foreground">
-            <div>
-              <p className="mb-2">Your browser does not support inline PDFs.</p>
-              <a
-                href={pdfUrl}
-                download={file?.name || "document.pdf"}
-                className="text-indigo-600 underline hover:text-indigo-800"
-              >
-                Download the file
-              </a>
-              {" "}to view it.
-            </div>
-          </div>
-        </object>
-      </div>
-    );
-  }
-
   return (
     <Tooltip.Provider delayDuration={200}>
       {/* Outer container with relative positioning for fixed controls */}
       <div className="relative h-full w-full bg-gray-100">
         {/* Scrolling content area */}
-        <div className="custom-scrollbar h-full overflow-y-auto pb-20">
-          <div className="min-h-full p-4 md:p-8">
+        <div className={`custom-scrollbar h-full pb-20 ${pdfUrl ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+          <div className="min-h-full p-4 md:p-8" style={{ height: pdfUrl ? '100%' : 'auto' }}>
             <div
-              className="mx-auto bg-white shadow-lg"
+              className={`mx-auto bg-white shadow-lg ${pdfUrl ? 'h-full' : ''}`}
               style={{
                 width: `${zoom}%`,
-                maxWidth: "800px",
-                minHeight: "1000px",
+                maxWidth: pdfUrl ? '100%' : '800px',
+                minHeight: pdfUrl ? '100%' : '1000px',
+                transition: 'width 0.2s ease',
                 boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1), inset 0 0 20px rgba(0, 0, 0, 0.02)",
               }}
             >
-              <div className="relative p-8 md:p-12">
-                {/* Sample contract content */}
+              {pdfUrl ? (
+                <object
+                  data={`${pdfUrl}#toolbar=0&navpanes=0&view=FitH`}
+                  type="application/pdf"
+                  className="h-full w-full"
+                >
+                  <div className="flex h-full items-center justify-center bg-gray-100 p-8 text-center text-muted-foreground">
+                    <div>
+                      <p className="mb-2">Your browser does not support inline PDFs.</p>
+                      <a
+                        href={pdfUrl}
+                        download={file?.name || "document.pdf"}
+                        className="text-indigo-600 underline hover:text-indigo-800"
+                      >
+                        Download the file
+                      </a>
+                      {" "}to view it.
+                    </div>
+                  </div>
+                </object>
+              ) : (
+                <div className="relative p-8 md:p-12">
+                  {/* Sample contract content */}
                 <div className="space-y-6">
                   <div className="border-b border-gray-200 pb-4">
                     <h2 className="mb-2 text-2xl" style={{ fontWeight: 600 }}>
@@ -338,15 +334,18 @@ export function PDFViewer({
                   </div>
                 </div>
               </div>
+              )}
             </div>
 
             {/* Helpful hint - part of scrolling content */}
-            <div className="mx-auto mt-6 max-w-md rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-900 shadow-sm">
-              <div className="flex items-center gap-2">
-                <Info className="h-4 w-4 flex-shrink-0" />
-                <span>Hover over highlighted text to see risk details</span>
+            {!pdfUrl && (
+              <div className="mx-auto mt-6 max-w-md rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-900 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <Info className="h-4 w-4 flex-shrink-0" />
+                  <span>Hover over highlighted text to see risk details</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
