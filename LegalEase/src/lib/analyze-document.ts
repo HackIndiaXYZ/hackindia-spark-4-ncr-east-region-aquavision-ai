@@ -7,9 +7,10 @@ type AnalyzeResponse = {
   error?: string;
 };
 
-export async function analyzeDocument(file: File) {
+export async function analyzeDocument(file: File, privacyMode = false) {
   const formData = new FormData();
   formData.append("file", file);
+  formData.append("privacyMode", privacyMode.toString());
 
   const response = await fetch("/api/analyze", {
     method: "POST",

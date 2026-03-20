@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 
 import { analyzeDocument } from "@/lib/analyze-document";
 import { translateDocument } from "@/lib/translate-document";
 import type { AnalysisResult } from "@/types/analysis";
+import { toast } from "sonner";
 
 import { AnalysisLoadingState } from "./components/AnalysisLoadingState";
 import { DashboardHeader } from "./components/DashboardHeader";
@@ -51,15 +52,111 @@ export default function App() {
   const [analysisMode, setAnalysisMode] = useState<"demo" | "live" | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState("en");
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"document" | "analysis">("document");
   const [activeHighlight, setActiveHighlight] = useState<string | undefined>();
   const [translationsCache, setTranslationsCache] = useState<Record<string, AnalysisResult>>({});
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isSynthesizing, setIsSynthesizing] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
 
   const hasDocument = selectedFile !== null;
   const showResults = analysis !== null;
-  const highlights = useMemo(() => deriveHighlights(analysis), [analysis]);
+  const highlights = useMemo(
+    () => (analysisMode === "demo" ? deriveHighlights(analysis) : []),
+    [analysis, analysisMode],
+  );
+  const canListen = targetLanguage === "en" || targetLanguage === "hi";
+  const canViewInDocument = analysisMode === "demo";
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined") {
+      if (navigator.language.startsWith("hi")) {
+        setTargetLanguage("hi");
+      }
+    }
+  }, []);
+
+  const handleListen = async () => {
+    if (isPlaying) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      setIsPlaying(false);
+      return;
+    }
+
+    if (!analysis) return;
+
+    try {
+      setIsSynthesizing(true);
+      const issues = analysis.risks.filter(r => r.level === 'high' || r.level === 'medium').map((r) => r.title).join(". ");
+      const textToRead = `Overall Risk Score is ${analysis.riskScore} out of 100. Summary: ${analysis.summary}. What could go wrong: ${analysis.consequences.join(". ")}. Key loopholes and risks found: ${issues}.`;
+      
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: textToRead, targetLanguage })
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Failed to generate text-to-speech");
+      }
+
+      const data = await response.json();
+      
+      if (!data.audios || !data.audios.length) {
+        throw new Error("No audio returned from API");
+      }
+
+      let currentAudioIndex = 0;
+      
+      const playNextChunk = () => {
+        if (!isPlaying && currentAudioIndex > 0) return; // Stopped manually
+
+        if (currentAudioIndex >= data.audios.length) {
+          setIsPlaying(false);
+          return;
+        }
+
+        const audio = new Audio(`data:audio/wav;base64,${data.audios[currentAudioIndex]}`);
+        audioRef.current = audio;
+        
+        audio.onended = () => {
+          currentAudioIndex++;
+          playNextChunk();
+        };
+
+        audio.play().catch((e) => {
+          console.error("Audio playback error:", e);
+          setIsPlaying(false);
+        });
+      };
+
+      setIsPlaying(true);
+      playNextChunk();
+    } catch (err) {
+      console.error(err);
+      setIsPlaying(false);
+      toast.error(err instanceof Error ? err.message : "Text-to-Speech failed.");
+    } finally {
+      setIsSynthesizing(false);
+    }
+  };
 
   const handleUpload = async (file: File) => {
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
@@ -79,29 +176,11 @@ export default function App() {
     setTranslationsCache({});
 
     try {
-      const result = await analyzeDocument(file);
+      const result = await analyzeDocument(file, true);
       setOriginalAnalysis(result.data);
       setAnalysis(result.data);
       setAnalysisMode(result.mode);
       setTranslationsCache({ en: result.data });
-
-      // Start pre-fetching translations in the background for zero-latency switching
-      Promise.all([
-        translateDocument(result.data, "hinglish").catch(() => null),
-        translateDocument(result.data, "hi").catch(() => null),
-        translateDocument(result.data, "gu").catch(() => null),
-        translateDocument(result.data, "ta").catch(() => null),
-        translateDocument(result.data, "te").catch(() => null),
-      ]).then(([hinglishRes, hiRes, guRes, taRes, teRes]) => {
-        setTranslationsCache((prev) => ({
-          ...prev,
-          ...(hinglishRes && { hinglish: hinglishRes.data as AnalysisResult }),
-          ...(hiRes && { hi: hiRes.data as AnalysisResult }),
-          ...(guRes && { gu: guRes.data as AnalysisResult }),
-          ...(taRes && { ta: taRes.data as AnalysisResult }),
-          ...(teRes && { te: teRes.data as AnalysisResult }),
-        }));
-      });
 
     } catch (analysisError) {
       setError(
@@ -189,17 +268,34 @@ export default function App() {
     }, 100);
   };
 
+  const handleExport = () => {
+    try {
+      // Small timeout to ensure any state changes (if we had any print-specific ones) are flushed
+      setTimeout(() => {
+        window.print();
+        toast.success("Ready to save as PDF!");
+      }, 100);
+    } catch (err) {
+      console.error("Export failed", err);
+      toast.error("Failed to prepare report.");
+    }
+  };
+
   return (
-    <div className="flex h-screen flex-col overflow-hidden print:h-auto print:overflow-visible">
+    <div className="flex h-screen flex-col overflow-hidden bg-slate-50 dark:bg-[#0B0F19] text-slate-900 dark:text-slate-200 print:h-auto print:overflow-visible transition-colors duration-300">
       <DashboardHeader
-        filename={
-          hasDocument ? analysis?.documentName || selectedFile?.name : undefined
-        }
+        filename={selectedFile?.name || (analysisMode === "demo" ? "Acme_Corp_Service_Agreement.pdf" : undefined)}
         onReset={handleReset}
-        onDemoClick={!hasDocument ? handleDemoTopBar : undefined}
         targetLanguage={targetLanguage}
         onLanguageChange={handleLanguageChange}
         isTranslating={isTranslating}
+        onExport={handleExport}
+        isExporting={isExporting}
+        isPlaying={isPlaying}
+        isSynthesizing={isSynthesizing}
+        onListen={analysis ? handleListen : undefined}
+        isListenDisabled={!canListen}
+        listenUnavailableReason="Audio narration is currently available in English and Hindi."
       />
 
       {showResults && (
@@ -225,7 +321,7 @@ export default function App() {
             </div>
 
             {error && (
-              <div className="w-full max-w-lg rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900 shadow-sm">
+              <div className="w-full max-w-lg rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-300 shadow-sm backdrop-blur-sm">
                 {error}
               </div>
             )}
@@ -234,7 +330,7 @@ export default function App() {
 
         {showResults && !isAnalyzing && (
           <div className="hidden h-full w-full md:flex print:block print:h-auto print:w-full">
-            <div className="h-full w-[55%] border-r border-border print:hidden">
+            <div className="h-full w-[40%] border-r border-border dark:border-white/10 print:hidden">
               <PDFViewer
                 file={selectedFile}
                 analysisMode={analysisMode}
@@ -243,12 +339,12 @@ export default function App() {
                 onHighlightClick={handleHighlightClick}
               />
             </div>
-
-            <div className="h-full w-[45%] print:w-full print:h-auto print:block">
+            <div className="h-full w-[60%] bg-slate-50 dark:bg-[#0B0F19] print:w-full overflow-y-auto custom-scrollbar">
               <RiskAnalysisPanel
                 analysis={analysis}
                 analysisMode={analysisMode}
                 onViewInDocument={handleViewInDocument}
+                canViewInDocument={canViewInDocument}
                 showAnimations
                 targetLanguage={targetLanguage}
               />
@@ -258,7 +354,7 @@ export default function App() {
 
         {showResults && !isAnalyzing && (
           <div className="hidden h-full w-full flex-col sm:flex md:hidden">
-            <div className="h-1/2 border-b border-border">
+            <div className="h-1/2 border-b border-border dark:border-white/10">
               <PDFViewer
                 file={selectedFile}
                 analysisMode={analysisMode}
@@ -273,6 +369,7 @@ export default function App() {
                 analysis={analysis}
                 analysisMode={analysisMode}
                 onViewInDocument={handleViewInDocument}
+                canViewInDocument={canViewInDocument}
                 showAnimations
                 targetLanguage={targetLanguage}
               />
@@ -298,6 +395,7 @@ export default function App() {
                   analysis={analysis}
                   analysisMode={analysisMode}
                   onViewInDocument={handleViewInDocument}
+                  canViewInDocument={canViewInDocument}
                   showAnimations
                   targetLanguage={targetLanguage}
                 />

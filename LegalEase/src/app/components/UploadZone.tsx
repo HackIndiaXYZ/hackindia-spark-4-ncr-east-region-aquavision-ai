@@ -41,15 +41,15 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
       />
 
       <div
-        className={`flex w-full max-w-lg flex-col items-center gap-6 rounded-xl border-2 border-dashed p-8 transition-all md:gap-8 md:p-12 ${
-          isDragging
-            ? "border-[#4f46e5] bg-indigo-50"
-            : "border-indigo-200 bg-white hover:border-[#4f46e5] hover:bg-indigo-50"
-        }`}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setIsDragging(true);
-        }}
+        className={`flex w-full max-w-lg flex-col items-center gap-6 rounded-2xl border-2 border-dashed p-8 transition-all md:gap-8 md:p-12 bg-white dark:bg-[#15192C] shadow-sm dark:shadow-[0_4px_30px_rgba(0,0,0,0.5)] ${
+        isDragging
+          ? "border-indigo-500 bg-indigo-50 dark:border-violet-500 dark:bg-violet-500/10"
+          : "border-border dark:border-white/10 hover:border-indigo-400 dark:hover:border-violet-500/50 hover:bg-gray-50/50 dark:hover:bg-[#1A1F36]"
+      }`}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setIsDragging(true);
+      }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={(e) => {
           e.preventDefault();
@@ -57,23 +57,23 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
           handleFiles(e.dataTransfer.files);
         }}
       >
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100 md:h-20 md:w-20">
-          <CloudUpload className="h-8 w-8 text-[#4f46e5] md:h-12 md:w-12" />
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100 dark:bg-violet-600/20 shadow-none dark:shadow-[0_0_30px_rgba(124,58,237,0.3)] md:h-20 md:w-20">
+          <CloudUpload className="h-8 w-8 text-indigo-600 dark:text-violet-400 md:h-10 md:w-10" />
         </div>
 
         <div className="text-center">
-          <h3 className="mb-2 text-lg md:text-xl" style={{ fontWeight: 700 }}>
+          <h3 className="mb-2 text-lg md:text-xl text-foreground dark:text-slate-100" style={{ fontWeight: 700 }}>
             Upload Your Contract
           </h3>
-          <p className="text-muted-foreground">
-            Supports PDF, DOCX, up to 50MB
+          <p className="text-muted-foreground dark:text-slate-400">
+            Upload a text-based PDF contract for the best results
           </p>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row">
           <button
             onClick={() => inputRef.current?.click()}
-            className="rounded-lg border border-border bg-white px-6 py-2.5 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
+            className="rounded-lg border border-white/5 bg-[#1F253F] px-6 py-2.5 text-[14px] text-slate-200 transition-colors hover:bg-[#2A3152] focus:outline-none focus:ring-2 focus:ring-violet-500"
             style={{ fontWeight: 500 }}
           >
             Upload Your Contract
@@ -81,7 +81,7 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
           
           <button
             onClick={handleDemoClick}
-            className="rounded-lg border border-indigo-200 bg-indigo-50 px-6 py-2.5 text-[#4f46e5] transition-colors hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-[#4f46e5] focus:ring-offset-2"
+            className="rounded-lg border border-violet-500/30 bg-[#161A30] px-6 py-2.5 text-[14px] text-indigo-300 transition-all hover:bg-violet-500/20 hover:border-violet-500/50 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-[#0B0F19]"
             style={{ fontWeight: 500 }}
           >
             Try with Sample Contract

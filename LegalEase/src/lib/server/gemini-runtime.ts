@@ -2,8 +2,6 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const DEFAULT_PRIMARY_MODEL = "gemini-2.5-flash";
 const DEFAULT_FALLBACK_MODELS = [
-  "gemini-3-flash",
-  "gemini-3.1-flash-lite",
   "gemini-2.5-flash-lite",
 ] as const;
 
@@ -70,26 +68,9 @@ function isFatalConfigurationError(error: unknown) {
 }
 
 function summarizeAttempts(attempts: GeminiAttempt[]) {
-  const hasQuotaFailure = attempts.some(
-    (attempt) =>
-      attempt.status === 429 ||
-      attempt.message.toLowerCase().includes("quota exceeded") ||
-      attempt.message.toLowerCase().includes("too many requests"),
-  );
-
-  if (hasQuotaFailure) {
-    return `Gemini quota is unavailable for the attempted models (${attempts
-      .map((attempt) => attempt.model)
-      .join(", ")}).`;
-  }
-
-  const lastAttempt = attempts.at(-1);
-
-  if (!lastAttempt) {
-    return "Gemini is unavailable right now.";
-  }
-
-  return `Gemini is unavailable right now (${lastAttempt.model}: ${lastAttempt.message}).`;
+  return attempts
+    .map((attempt) => `${attempt.model}: ${attempt.message} (${attempt.status || "no-status"})`)
+    .join(" | ");
 }
 
 export class GeminiRequestError extends Error {
@@ -121,27 +102,33 @@ export async function withGeminiModelFallback<T>(
   taskName: string,
   handler: (client: GoogleGenerativeAI, modelName: string) => Promise<T>,
 ) {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const keysStr = process.env.GEMINI_API_KEYS || process.env.GEMINI_API_KEY;
 
-  if (!apiKey) {
+  if (!keysStr) {
     throw new Error("GEMINI_API_KEY is not configured.");
   }
 
-  const client = new GoogleGenerativeAI(apiKey);
+  // Parse comma-separated keys and shuffle them for load balancing
+  const apiKeys = keysStr.split(",").map(k => k.trim()).filter(Boolean);
+  const shuffledKeys = [...apiKeys].sort(() => Math.random() - 0.5);
   const attempts: GeminiAttempt[] = [];
 
   for (const modelName of getModelCandidates()) {
-    try {
-      return await handler(client, modelName);
-    } catch (error) {
-      attempts.push({
-        model: modelName,
-        message: getErrorMessage(error),
-        status: toGeminiError(error).status,
-      });
+    for (const key of shuffledKeys) {
+      const client = new GoogleGenerativeAI(key);
+      try {
+        return await handler(client, modelName);
+      } catch (error) {
+        attempts.push({
+          model: modelName,
+          message: getErrorMessage(error),
+          status: toGeminiError(error).status,
+        });
 
-      if (isFatalConfigurationError(error)) {
-        break;
+        if (isFatalConfigurationError(error)) {
+          // If the key is totally invalid, skip to the next key
+          continue;
+        }
       }
     }
   }

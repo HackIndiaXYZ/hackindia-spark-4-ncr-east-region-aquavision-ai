@@ -55,16 +55,16 @@ export function RiskIndicatorBar({ score, animate = false, targetLanguage = "en"
   // Determine which zone the score falls into
   let zoneLabel = t.lowRisk;
   let zoneColor = "bg-[#10b981]";
-  let zoneBadgeColor = "bg-green-100 text-green-700";
+  let zoneBadgeColor = "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30";
   
   if (displayScore > 66) {
     zoneLabel = t.highRisk;
     zoneColor = "bg-[#ef4444]";
-    zoneBadgeColor = "bg-red-100 text-red-700";
+    zoneBadgeColor = "bg-red-50 text-red-700 border border-red-200 dark:bg-red-500/10 dark:text-red-300 dark:border-red-500/30";
   } else if (displayScore > 33) {
     zoneLabel = t.mediumRisk;
     zoneColor = "bg-[#f59e0b]";
-    zoneBadgeColor = "bg-amber-100 text-amber-700";
+    zoneBadgeColor = "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/30";
   }
 
   return (
@@ -72,7 +72,7 @@ export function RiskIndicatorBar({ score, animate = false, targetLanguage = "en"
       {/* Score Display */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="mb-1 text-xs text-muted-foreground">{t.overallRisk}</div>
+          <div className="mb-1 text-xs text-muted-foreground dark:text-slate-400">{t.overallRisk}</div>
           <div className="flex items-baseline gap-2">
             <span
               className="text-3xl md:text-4xl"
@@ -83,7 +83,7 @@ export function RiskIndicatorBar({ score, animate = false, targetLanguage = "en"
             >
               {displayScore}
             </span>
-            <span className="text-lg text-muted-foreground">/100</span>
+            <span className="text-lg text-muted-foreground dark:text-slate-500">/100</span>
           </div>
         </div>
         <div
@@ -95,14 +95,14 @@ export function RiskIndicatorBar({ score, animate = false, targetLanguage = "en"
       </div>
 
       {/* Labels */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground md:text-sm">
+      <div className="flex items-center justify-between text-xs text-muted-foreground dark:text-slate-400 md:text-sm">
         <span style={{ fontWeight: 500 }}>0 - {t.low}</span>
         <span style={{ fontWeight: 500 }}>33 - {t.medium}</span>
         <span style={{ fontWeight: 500 }}>66 - {t.high}</span>
       </div>
 
       {/* Gradient Bar */}
-      <div className="relative h-3 w-full overflow-hidden rounded-full bg-gray-200">
+      <div className="relative h-3 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
         {/* Animated gradient fill */}
         <div
           className="h-full transition-all duration-500 ease-out"
@@ -123,9 +123,9 @@ export function RiskIndicatorBar({ score, animate = false, targetLanguage = "en"
             style={{ left: `${position}%` }}
           >
             <div
-              className={`flex h-6 w-6 items-center justify-center rounded-full border-3 border-white ${zoneColor} shadow-lg`}
+              className={`flex h-6 w-6 items-center justify-center rounded-full border-2 border-white dark:border-[#0B0F19] ${zoneColor} shadow-sm dark:shadow-[0_0_15px_rgba(0,0,0,0.5)]`}
             >
-              <div className="h-2 w-2 rounded-full bg-white" />
+              <div className="h-2 w-2 rounded-full bg-white dark:bg-[#0B0F19]" />
             </div>
           </div>
         )}

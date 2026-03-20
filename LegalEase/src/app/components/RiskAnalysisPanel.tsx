@@ -8,6 +8,7 @@ interface RiskAnalysisPanelProps {
   analysis: AnalysisResult | null;
   analysisMode: "demo" | "live" | null;
   onViewInDocument: (clauseId: string) => void;
+  canViewInDocument?: boolean;
   showAnimations?: boolean;
   targetLanguage?: string;
 }
@@ -61,6 +62,7 @@ export function RiskAnalysisPanel({
   analysis,
   analysisMode,
   onViewInDocument,
+  canViewInDocument = false,
   showAnimations = false,
   targetLanguage = "en",
 }: RiskAnalysisPanelProps) {
@@ -79,8 +81,7 @@ export function RiskAnalysisPanel({
 
   const t = {
     liveAnalysis: getStr("🟢 Live AI Analysis", "🟢 लाइव AI विश्लेषण", "🟢 Live AI Analysis", "🟢 લાઇવ AI વિશ્લેષણ", "🟢 நேரடி AI பகுப்பாய்வு", "🟢 లైవ్ AI విశ్లేషణ"),
-    demoMode: getStr("🟡 Demo Mode", "🟡 डेमो मोड", "🟡 Demo Mode", "🟡 ડેમો મોડ", "🟡 டெமோ பயன்முறை", "🟡 డెమో మోడ్"),
-    demoNote: getStr("Showing demo results due to temporary issue", "अस्थायी समस्या के कारण डेमो परिणाम दिखा रहे हैं", "Temporary problem ki wajah se demo dikha rahe hain", "અસ્થાયી સમસ્યાને કારણે ડેમો પરિણામો બતાવી રહ્યું છે", "தற்காலிக சிக்கல் காரணமாக டெமோ முடிவுகள் காட்டப்படுகின்றன", "తాత్కాలిక సమస్య కారణంగా డెమో ఫలితాలు చూపుతున్నాము"),
+    demoMode: getStr("🟡 Demo Mode (Hackathon Preview)", "🟡 डेमो मोड (हैकथॉन प्रीव्यू)", "🟡 Demo Mode (Hackathon Preview)", "🟡 ડેમો મોડ (હેકાથોન પ્રિવ્યૂ)", "🟡 டெமோ பயன்முறை (ஹக்கத்தான் முன்னோட்டம்)", "🟡 డెమో మోడ్ (హాకథాన్ ప్రివ్యూ)"),
     confidence: getStr("Confidence Score", "विश्वास स्कोर", "Confidence Score", "વિશ્વાસ સ્કોર", "நம்பிக்கை மதிப்பெண்", "విశ్వాస స్కోరు"),
     risksFound: getStr("Risks Found", "पाए गए जोखिम", "Risks Found", "જોખમો મળ્યા", "கண்டறியப்பட்ட அபாயங்கள்", "ప్రమాదాలు కనుగొనబడ్డాయి"),
     high: getStr("high", "उच्च", "high", "ઉચ્ચ", "உயர்", "అధిక"),
@@ -117,9 +118,9 @@ export function RiskAnalysisPanel({
   const primaryIssues = getPrimaryIssues(analysis.risks);
 
   return (
-    <div className="custom-scrollbar h-full overflow-y-auto bg-gray-50">
-      <div className="min-h-full">
-        <div className="border-b border-border">
+    <div className="custom-scrollbar h-full overflow-y-auto bg-transparent">
+      <div className="min-h-full bg-slate-50 dark:bg-[#0B0F19]" id="exportable-analysis">
+        <div className="border-b border-border dark:border-white/10">
           <RiskSummaryBanner
             riskLevel={riskLevel}
             riskScore={analysis.riskScore}
@@ -129,13 +130,13 @@ export function RiskAnalysisPanel({
         </div>
 
         {analysisMode && (
-          <div className="border-b border-border bg-white px-4 py-3 md:px-6">
+          <div className="border-b border-border bg-white/80 dark:border-white/10 dark:bg-[#0B0F19]/60 px-4 py-3 backdrop-blur-md md:px-6">
             <div className="flex flex-wrap items-center gap-2">
               <span
                 className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs shadow-sm ${
                   analysisMode === "live"
-                    ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
-                    : "bg-amber-100 text-amber-900 border border-amber-200"
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30"
+                    : "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/30"
                 }`}
                 style={{ fontWeight: 700, letterSpacing: "0.02em" }}
               >
@@ -143,42 +144,37 @@ export function RiskAnalysisPanel({
                   ? t.liveAnalysis
                   : t.demoMode}
               </span>
-              {analysisMode === "demo" && (
-                <span className="text-xs text-muted-foreground">
-                  {t.demoNote}
-                </span>
-              )}
             </div>
           </div>
         )}
 
-        <div className="border-b border-border bg-white p-4 md:p-6">
+        <div className="border-b border-border bg-transparent dark:border-white/10 p-4 md:p-6">
           <RiskIndicatorBar score={analysis.riskScore} animate={showAnimations} targetLanguage={targetLanguage} />
         </div>
 
-        <div className="border-b border-border bg-white px-4 py-3 md:px-6 md:py-4">
+        <div className="border-b border-border bg-slate-50/80 dark:border-white/10 dark:bg-[#0F172A]/40 px-4 py-3 md:px-6 md:py-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-xs text-muted-foreground">{t.confidence}</div>
-              <div className="text-2xl" style={{ fontWeight: 700 }}>
+              <div className="text-xs text-muted-foreground dark:text-slate-400">{t.confidence}</div>
+              <div className="text-2xl text-slate-900 dark:text-slate-100" style={{ fontWeight: 700 }}>
                 {analysis.confidenceScore}%
               </div>
             </div>
             <div>
-              <div className="text-xs text-muted-foreground">{t.risksFound}</div>
+              <div className="text-xs text-muted-foreground dark:text-slate-400">{t.risksFound}</div>
               <div className="flex items-baseline gap-2">
-                <div className="text-2xl text-red-600" style={{ fontWeight: 700 }}>
+                <div className="text-2xl text-red-500 dark:text-red-400" style={{ fontWeight: 700 }}>
                   {totalRisks}
                 </div>
-                <div className="text-sm text-muted-foreground">({highRiskCount} {t.high})</div>
+                <div className="text-sm text-muted-foreground dark:text-slate-400">({highRiskCount} {t.high})</div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="border-b border-border bg-white px-4 py-4 md:px-6">
+        <div className="border-b border-border bg-transparent dark:border-white/10 px-4 py-4 md:px-6">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-base md:text-lg text-amber-900" style={{ fontWeight: 700 }}>
+            <h3 className="text-base md:text-lg text-amber-600 dark:text-amber-400" style={{ fontWeight: 700 }}>
               {t.whatGoesWrong}
             </h3>
           </div>
@@ -186,7 +182,7 @@ export function RiskAnalysisPanel({
             {analysis.consequences.map((consequence) => (
               <div
                 key={consequence}
-                className="rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-sm text-amber-950"
+                className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 shadow-sm dark:border-amber-500/20 dark:bg-amber-500/5 dark:text-amber-100 dark:shadow-[0_0_10px_rgba(245,158,11,0.05)] backdrop-blur-sm"
               >
                 {consequence}
               </div>
@@ -194,28 +190,31 @@ export function RiskAnalysisPanel({
           </div>
         </div>
 
-        <div className="border-b border-border bg-white px-4 py-4 md:px-6">
-          <div className="space-y-2">
-            <div className="text-xs uppercase tracking-[0.08em] text-muted-foreground">
+        <div className="border-b border-border bg-slate-50/80 dark:border-white/10 dark:bg-[#0F172A]/40 px-4 py-4 md:px-6">
+          <div className="mb-2 flex items-center justify-between">
+            <div className="text-xs uppercase tracking-[0.08em] text-muted-foreground dark:text-slate-400">
               {t.summaryLabel}
             </div>
-            <p className="text-sm leading-relaxed text-foreground">{analysis.summary}</p>
-            <p className="mt-2 text-xs italic text-muted-foreground">{t.simplifiedNote}</p>
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm leading-relaxed text-slate-800 dark:text-slate-200">{analysis.summary}</p>
+            <p className="mt-2 text-xs italic text-muted-foreground dark:text-slate-500">{t.simplifiedNote}</p>
           </div>
         </div>
 
         <div className="p-4 md:p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-base md:text-lg" style={{ fontWeight: 600 }}>
+            <h3 className="text-base md:text-lg text-slate-900 dark:text-slate-100" style={{ fontWeight: 600 }}>
               {t.riskBreakdown}
             </h3>
-            <div className="text-xs text-muted-foreground">
+            <div className="text-xs text-muted-foreground dark:text-slate-400">
               {t.priorityNote}
             </div>
           </div>
           <RiskCategoryAccordion
             categories={riskCategories}
             onViewInDocument={onViewInDocument}
+            canViewInDocument={canViewInDocument}
             targetLanguage={targetLanguage}
           />
         </div>

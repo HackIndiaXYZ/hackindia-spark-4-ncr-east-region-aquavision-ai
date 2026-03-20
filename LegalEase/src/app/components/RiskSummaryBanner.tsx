@@ -31,28 +31,31 @@ export function RiskSummaryBanner({
   const config = {
     low: {
       icon: CheckCircle,
-      bg: "bg-green-50",
-      border: "border-green-200",
-      iconColor: "text-green-600",
-      textColor: "text-green-900",
+      bg: "bg-emerald-50 dark:bg-emerald-500/10",
+      border: "border-emerald-200 dark:border-emerald-500/30",
+      iconColor: "text-emerald-600 dark:text-emerald-400",
+      textColor: "text-emerald-800 dark:text-emerald-200",
+      bulletColor: "bg-emerald-500",
       label: getStr("LOW RISK", "कम जोखिम", "Low Risk", "ઓછું જોખમ", "குறைந்த அபாயம்", "తక్కువ ప్రమాదం"),
-      message: getStr("This contract appears relatively safe with minor concerns.", "यह अनुबंध मामूली चिंताओं के साथ अपेक्षाकृत सुरक्षित प्रतीत होता है।", "Yeh contract safe lag raha hai, kuch choti dikkaton ke saath.", "આ કરાર નાની ચિંતાઓ સાથે પ્રમાણમાં સુરક્ષિત જણાય છે.", "இந்த ஒப்பந்தம் ஒப்பீட்டளவில் பாதுகாப்பானதாகத் தெரிகிறது.", "ఈ ఒప్పందం సాపేక్షంగా సురక్షితంగా ఉన్నట్లు కనిపిస్తోంది."),
+      message: getStr("This contract appears relatively safe with minor concerns.", "यह अनुबंध मामूली चिंताओं के साथ अपेक्षाकृत सुरक्षित प्रतीत होता है।", "Yeh contract safe lag raha hai, kuch choti dikkaton ke saath.", "આ કરાર નાની ચિંતાઓ સાથે પ્રમાણમાં સુરક્ષિત જણાય છે.", "இந்த ஒப்பந்தம் ஒப்பீட்டளவில் பாதுகாப்பானது.", "ఈ ఒప్పందం సాపేక్షంగా సురక్షితంగా ఉన్నట్లు కనిపిస్తోంది."),
     },
     medium: {
       icon: AlertTriangle,
-      bg: "bg-amber-50",
-      border: "border-amber-200",
-      iconColor: "text-amber-600",
-      textColor: "text-amber-900",
-      label: getStr("MEDIUM RISK", "मध्यम जोखिम", "Medium Risk", "મધ્યમ જોખમ", "மிதமான அபாயம்", "మితమైన ప్రమాదం"),
+      bg: "bg-amber-50 dark:bg-amber-500/10",
+      border: "border-amber-200 dark:border-amber-500/30",
+      iconColor: "text-amber-600 dark:text-amber-400",
+      textColor: "text-amber-800 dark:text-amber-200",
+      bulletColor: "bg-amber-500",
+      label: getStr("MEDIUM RISK", "मध्यम जोखिम", "Medium Risk", "મધ્યમ જોખમ", "மிதமான அபாயம்", "மితమైన ప్రమాదం"),
       message: getStr("This contract has moderate concerns that should be reviewed.", "इस अनुबंध में मध्यम चिंताएं हैं जिनकी समीक्षा की जानी चाहिए।", "Is contract mein kuch aisi baatein hain jinhe dekhna zaroori hai.", "આ કરારમાં મધ્યમ ચિંતાઓ છે.", "இந்த ஒப்பந்தத்தில் மிதமான கவலைகள் உள்ளன, அவை மதிப்பாய்வு செய்யப்பட வேண்டும்.", "ఈ ఒప్పందంలో కొన్ని మితమైన ఆందోళనలు ఉన్నాయి."),
     },
     high: {
       icon: ShieldAlert,
-      bg: "bg-red-50",
-      border: "border-red-200",
-      iconColor: "text-red-600",
-      textColor: "text-red-900",
+      bg: "bg-red-50 dark:bg-red-500/10",
+      border: "border-red-200 dark:border-red-500/30",
+      iconColor: "text-red-500 dark:text-red-400",
+      textColor: "text-red-700 dark:text-red-200",
+      bulletColor: "bg-red-500",
       label: getStr("HIGH RISK", "उच्च जोखिम", "High Risk", "ઉચ્ચ જોખમ", "உயர் அபாயம்", "అధిక ప్రమాదం"),
       message: getStr("This contract has significant risks that need immediate attention.", "इस अनुबंध में महत्वपूर्ण जोखिम हैं जिन पर तुरंत ध्यान देने की आवश्यकता है।", "Is contract mein bade risks hain jinpe turant dhyaan dena hoga.", "આ કરારમાં નોંધપાત્ર જોખમો છે.", "இந்த ஒப்பந்தத்தில் குறிப்பிடத்தக்க அபாயங்கள் உள்ளன, அவை உடனடியாக கவனிக்கப்பட வேண்டும்.", "ఈ ఒప్పందంలో వెంటనే గమనించాల్సిన ముఖ్యమైన ప్రమాదాలు ఉన్నాయి."),
     },
@@ -103,11 +106,29 @@ export function RiskSummaryBanner({
       </p>
 
       {primaryIssues.length > 0 && (
-        <div className={`mt-2 rounded-lg bg-white/50 px-4 py-3 text-sm shadow-sm backdrop-blur-sm ${style.textColor}`}>
-          <strong style={{ fontWeight: 700 }}>
-            {t.keyConcerns}
-          </strong>{" "}
-          <span style={{ fontWeight: 500 }}>{primaryIssues.join(", ")}</span>
+        <div className="mt-5 w-full max-w-xl text-left z-10">
+          <div className={`rounded-xl border ${style.border} bg-white dark:bg-[#0B0F19]/80 shadow-md dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-md overflow-hidden`}>
+            {/* Header */}
+            <div className={`flex items-center gap-2 border-b ${style.border} ${style.bg} px-4 py-3`}>
+              <Icon className={`h-4 w-4 ${style.iconColor}`} />
+              <strong className={`text-[13px] uppercase tracking-wider ${style.textColor}`} style={{ fontWeight: 800 }}>
+                {t.keyConcerns}
+              </strong>
+            </div>
+            {/* Body */}
+            <div className="p-4">
+              <ul className="space-y-3">
+                {primaryIssues.map((issue, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${style.bulletColor} shadow-[0_0_8px_currentColor]`} />
+                    <span className="text-sm leading-snug text-slate-700 dark:text-slate-300" style={{ fontWeight: 500 }}>
+                      {issue}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       )}
     </div>

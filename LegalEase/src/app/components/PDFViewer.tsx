@@ -33,14 +33,17 @@ export function PDFViewer({
   const totalPages = 6;
 
   useEffect(() => {
-    if (file && analysisMode !== "demo") {
+    // The internal demo file is created with 13 bytes ("dummy content")
+    const isDummyFile = file && file.name === "Acme_Corp_Service_Agreement.pdf" && file.size < 50;
+
+    if (file && !isDummyFile) {
       const url = URL.createObjectURL(file);
       setPdfUrl(url);
       return () => URL.revokeObjectURL(url);
     } else {
       setPdfUrl(null);
     }
-  }, [file, analysisMode]);
+  }, [file]);
 
   const pageHighlights = highlights.filter((h) => h.page === currentPage);
 
@@ -73,16 +76,16 @@ export function PDFViewer({
   return (
     <Tooltip.Provider delayDuration={200}>
       {/* Outer container with relative positioning for fixed controls */}
-      <div className="relative h-full w-full bg-gray-100">
+      <div className="relative h-full w-full bg-slate-50 dark:bg-[#0B0F19]">
         {/* Scrolling content area */}
-        <div className={`custom-scrollbar h-full pb-20 ${pdfUrl ? 'overflow-hidden' : 'overflow-y-auto'}`}>
-          <div className="min-h-full p-4 md:p-8" style={{ height: pdfUrl ? '100%' : 'auto' }}>
+        <div className={`custom-scrollbar h-full ${pdfUrl ? 'overflow-hidden' : 'overflow-y-auto pb-20'}`}>
+          <div className={`min-h-full ${pdfUrl ? 'p-0' : 'p-4 md:p-8'}`} style={{ height: pdfUrl ? '100%' : 'auto' }}>
             <div
-              className={`mx-auto bg-white shadow-lg ${pdfUrl ? 'h-full' : ''}`}
-              style={{
+              className={pdfUrl ? 'h-full w-full' : 'mx-auto bg-white dark:bg-[#13172E] shadow-sm dark:shadow-[0_4px_30px_rgba(0,0,0,0.5)] border border-border dark:border-white/5 rounded-lg'}
+              style={pdfUrl ? {} : {
                 width: `${zoom}%`,
-                maxWidth: pdfUrl ? '100%' : '800px',
-                minHeight: pdfUrl ? '100%' : '1000px',
+                maxWidth: '800px',
+                minHeight: '1000px',
                 transition: 'width 0.2s ease',
                 boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1), inset 0 0 20px rgba(0, 0, 0, 0.02)",
               }}
@@ -92,8 +95,9 @@ export function PDFViewer({
                   data={`${pdfUrl}#toolbar=0&navpanes=0&view=FitH`}
                   type="application/pdf"
                   className="h-full w-full"
+                  style={{ opacity: 0.95 }}
                 >
-                  <div className="flex h-full items-center justify-center bg-gray-100 p-8 text-center text-muted-foreground">
+                  <div className="flex h-full items-center justify-center bg-slate-50 dark:bg-[#0B0F19] p-8 text-center text-muted-foreground dark:text-slate-400">
                     <div>
                       <p className="mb-2">Your browser does not support inline PDFs.</p>
                       <a
@@ -110,12 +114,12 @@ export function PDFViewer({
               ) : (
                 <div className="relative p-8 md:p-12">
                   {/* Sample contract content */}
-                <div className="space-y-6">
-                  <div className="border-b border-gray-200 pb-4">
-                    <h2 className="mb-2 text-2xl" style={{ fontWeight: 600 }}>
+                <div className="space-y-6 text-slate-700 dark:text-slate-300">
+                  <div className="border-b border-border dark:border-white/10 pb-4">
+                    <h2 className="mb-2 text-2xl text-slate-900 dark:text-slate-100" style={{ fontWeight: 600 }}>
                       Service Agreement
                     </h2>
-                    <p className="text-muted-foreground">
+                    <p className="text-slate-500 dark:text-slate-400">
                       Effective Date: March 19, 2026
                     </p>
                   </div>
@@ -162,7 +166,7 @@ export function PDFViewer({
                             </Tooltip.Trigger>
                             <Tooltip.Portal>
                               <Tooltip.Content
-                                className="z-50 max-w-xs rounded-lg border border-border bg-white p-3 shadow-lg"
+                                className="z-50 max-w-xs rounded-lg border border-border bg-white p-3 shadow-xl dark:border-white/10 dark:bg-[#171C2E] dark:shadow-2xl backdrop-blur-md"
                                 sideOffset={5}
                               >
                                 <div className="space-y-2">
@@ -172,14 +176,14 @@ export function PDFViewer({
                                       MODERATE RISK
                                     </span>
                                   </div>
-                                  <p className="text-sm" style={{ fontWeight: 600 }}>
+                                  <p className="text-sm text-slate-900 dark:text-slate-100" style={{ fontWeight: 600 }}>
                                     Short Termination Notice Period
                                   </p>
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-sm text-slate-500 dark:text-slate-400">
                                     30-day notice may be insufficient for complex project transitions.
                                   </p>
                                 </div>
-                                <Tooltip.Arrow className="fill-white" />
+                                <Tooltip.Arrow className="fill-white dark:fill-[#171C2E]" />
                               </Tooltip.Content>
                             </Tooltip.Portal>
                           </Tooltip.Root>
@@ -207,7 +211,7 @@ export function PDFViewer({
                           </Tooltip.Trigger>
                           <Tooltip.Portal>
                             <Tooltip.Content
-                              className="z-50 max-w-xs rounded-lg border border-border bg-white p-3 shadow-lg"
+                              className="z-50 max-w-xs rounded-lg border border-border bg-white dark:border-white/10 dark:bg-[#171C2E] p-3 shadow-xl dark:shadow-2xl backdrop-blur-md"
                               sideOffset={5}
                             >
                               <div className="space-y-2">
@@ -217,14 +221,14 @@ export function PDFViewer({
                                     MODERATE RISK
                                   </span>
                                 </div>
-                                <p className="text-sm" style={{ fontWeight: 600 }}>
+                                <p className="text-sm text-slate-900 dark:text-slate-100" style={{ fontWeight: 600 }}>
                                   High Late Payment Interest
                                 </p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
                                   2% monthly (24% APR) is above market standard.
                                 </p>
                               </div>
-                              <Tooltip.Arrow className="fill-white" />
+                              <Tooltip.Arrow className="fill-white dark:fill-[#171C2E]" />
                             </Tooltip.Content>
                           </Tooltip.Portal>
                         </Tooltip.Root>
@@ -252,7 +256,7 @@ export function PDFViewer({
                           </Tooltip.Trigger>
                           <Tooltip.Portal>
                             <Tooltip.Content
-                              className="z-50 max-w-xs rounded-lg border border-border bg-white p-3 shadow-lg"
+                              className="z-50 max-w-xs rounded-lg border border-border bg-white dark:border-white/10 dark:bg-[#171C2E] p-3 shadow-xl dark:shadow-2xl backdrop-blur-md"
                               sideOffset={5}
                             >
                               <div className="space-y-2">
@@ -262,14 +266,14 @@ export function PDFViewer({
                                     MODERATE RISK
                                   </span>
                                 </div>
-                                <p className="text-sm" style={{ fontWeight: 600 }}>
+                                <p className="text-sm text-slate-900 dark:text-slate-100" style={{ fontWeight: 600 }}>
                                   Ambiguous IP Ownership
                                 </p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
                                   Vague definition of pre-existing materials could cause disputes.
                                 </p>
                               </div>
-                              <Tooltip.Arrow className="fill-white" />
+                              <Tooltip.Arrow className="fill-white dark:fill-[#171C2E]" />
                             </Tooltip.Content>
                           </Tooltip.Portal>
                         </Tooltip.Root>
@@ -306,7 +310,7 @@ export function PDFViewer({
                           </Tooltip.Trigger>
                           <Tooltip.Portal>
                             <Tooltip.Content
-                              className="z-50 max-w-xs rounded-lg border border-border bg-white p-3 shadow-lg"
+                              className="z-50 max-w-xs rounded-lg border border-border bg-white dark:border-white/10 dark:bg-[#171C2E] p-3 shadow-xl dark:shadow-2xl backdrop-blur-md"
                               sideOffset={5}
                             >
                               <div className="space-y-2">
@@ -316,14 +320,14 @@ export function PDFViewer({
                                     CRITICAL RISK
                                   </span>
                                 </div>
-                                <p className="text-sm" style={{ fontWeight: 600 }}>
+                                <p className="text-sm text-slate-900 dark:text-slate-100" style={{ fontWeight: 600 }}>
                                   Asymmetric Liability Terms
                                 </p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
                                   Provider's liability is capped while yours is not, creating imbalanced risk.
                                 </p>
                               </div>
-                              <Tooltip.Arrow className="fill-white" />
+                              <Tooltip.Arrow className="fill-white dark:fill-[#171C2E]" />
                             </Tooltip.Content>
                           </Tooltip.Portal>
                         </Tooltip.Root>{" "}
@@ -339,9 +343,9 @@ export function PDFViewer({
 
             {/* Helpful hint - part of scrolling content */}
             {!pdfUrl && (
-              <div className="mx-auto mt-6 max-w-md rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-900 shadow-sm">
+              <div className="mx-auto mt-6 max-w-md rounded-lg border border-indigo-200 bg-indigo-50 dark:border-violet-500/20 dark:bg-violet-500/10 px-4 py-3 text-sm text-indigo-800 dark:text-violet-300 shadow-sm backdrop-blur-sm">
                 <div className="flex items-center gap-2">
-                  <Info className="h-4 w-4 flex-shrink-0" />
+                  <Info className="h-4 w-4 flex-shrink-0 text-indigo-600 dark:text-violet-400" />
                   <span>Hover over highlighted text to see risk details</span>
                 </div>
               </div>
@@ -349,61 +353,7 @@ export function PDFViewer({
           </div>
         </div>
 
-        {/* FIXED Navigation Controls - positioned absolutely, stays at bottom */}
-        <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-10">
-          {/* Gradient fade to indicate more content */}
-          <div className="h-12 bg-gradient-to-t from-gray-100 via-gray-100/80 to-transparent" />
-          
-          <div className="pointer-events-auto flex items-center justify-between border-t border-border bg-white/95 px-4 py-3 shadow-lg backdrop-blur-sm md:justify-center md:gap-8">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className="rounded-lg p-2 transition-colors hover:bg-accent disabled:opacity-40 disabled:hover:bg-transparent focus:outline-none focus:ring-2 focus:ring-ring"
-                aria-label="Previous page"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
 
-              <span className="min-w-[80px] text-center text-muted-foreground md:min-w-[120px]">
-                Page {currentPage} of {totalPages}
-              </span>
-
-              <button
-                onClick={() =>
-                  setCurrentPage(Math.min(totalPages, currentPage + 1))
-                }
-                disabled={currentPage === totalPages}
-                className="rounded-lg p-2 transition-colors hover:bg-accent disabled:opacity-40 disabled:hover:bg-transparent focus:outline-none focus:ring-2 focus:ring-ring"
-                aria-label="Next page"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setZoom(Math.max(50, zoom - 10))}
-                className="rounded-lg p-2 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
-                aria-label="Zoom out"
-              >
-                <ZoomOut className="h-5 w-5" />
-              </button>
-
-              <span className="min-w-[50px] text-center text-muted-foreground">
-                {zoom}%
-              </span>
-
-              <button
-                onClick={() => setZoom(Math.min(200, zoom + 10))}
-                className="rounded-lg p-2 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
-                aria-label="Zoom in"
-              >
-                <ZoomIn className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </Tooltip.Provider>
   );

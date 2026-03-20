@@ -2,54 +2,64 @@ import type { AnalysisResult } from "@/types/analysis";
 
 import { withGeminiModelFallback } from "@/lib/server/gemini-runtime";
 
+import { analysisResponseSchema } from "./gemini-contract-analysis";
+
 export async function translateAnalysisWithGemini(
   analysis: AnalysisResult,
   targetLanguage: "hi" | "hinglish" | "gu" | "ta" | "te",
 ): Promise<AnalysisResult> {
-  const languageMap = {
-    hi: "Hindi",
-    hinglish: "Hinglish",
-    gu: "Gujarati",
-    ta: "Tamil",
-    te: "Telugu",
+  const googleCodes: Record<string, string> = {
+    hi: "hi",
+    hinglish: "hi", // Defaulting hinglish to pure hindi visually for stability
+    gu: "gu",
+    ta: "ta",
+    te: "te",
   };
 
-  const targetLangName = languageMap[targetLanguage];
-  const payloadStr = JSON.stringify(analysis, null, 2);
-  const prompt = `
-You are a friendly, helpful AI translating a legal contract analysis from English to ${targetLangName}.
+  const targetLangCode = googleCodes[targetLanguage] || "hi";
+  
+  // FLAT-MAP OPTIMIZATION
+  const stringsToTranslate = [
+    analysis.summary,
+    ...analysis.risks.flatMap(r => [r.title, r.description, r.consequence]),
+    ...analysis.consequences
+  ];
 
-STRICT RULES:
-1. ONLY translate the string values. DO NOT translate the JSON keys.
-2. DO NOT change the "level" values ("low", "medium", "high"). Keep them in English.
-3. TONE: Use simple, everyday language that a normal person can understand (8th-grade level).
-${targetLanguage === "hinglish" ? "4. Use a slight Hinglish tone. Avoid heavy/legal shuddh Hindi. Keep it conversational. (e.g. Instead of 'यह धारा असीमित दायित्व लगाती है', use 'इसका मतलब है कि आपको नुकसान का पूरा पैसा देना पड़ सकता है, चाहे गलती आपकी पूरी न हो।')" : targetLanguage === "hi" ? "4. Use simple Hindi but avoid English words. Keep it natural." : "4. Avoid complex or formal legal vocabulary. Keep it natural, conversational, and slightly cautionary when needed."}
-5. Keep responses SHORT and easy to scan.
-6. Return ONLY the translated JSON matching the exact original structure. No markdown wrapping.
-
-Original JSON:
-${payloadStr}
-`.trim();
-
-  return withGeminiModelFallback("translation", async (client, modelName) => {
-    const model = client.getGenerativeModel({
-      model: modelName,
-      generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 2048,
-        responseMimeType: "application/json",
-      },
-    });
-
-    const result = await model.generateContent(prompt);
-    const parsed = JSON.parse(result.response.text().trim());
-
-    if (!parsed.summary || !Array.isArray(parsed.risks)) {
-      throw new Error("Translation returned invalid shape.");
+  // Helper function to hit the free, unthrottled Google Translate Web Endpoint
+  const gTranslate = async (text: string, code: string): Promise<string> => {
+    if (!text || !text.trim()) return text;
+    try {
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${code}&dt=t&q=${encodeURIComponent(text)}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("GTX fell back");
+      const data = await res.json();
+      return data[0].map((x: any) => x[0]).join("");
+    } catch (e) {
+      console.warn("Translation slice failed, returning English:", text.substring(0, 15));
+      return text;
     }
+  };
 
-    return parsed as AnalysisResult;
-  });
+  // Map translations over the array concurrently (Google GTX handles hundreds of concurrents easily)
+  const translatedStrings = await Promise.all(
+    stringsToTranslate.map(str => gTranslate(str, targetLangCode))
+  );
+
+  // ZIP THE TRANSLATED STRINGS BACK INTO THE ORIGINAL OBJECT GRAPH
+  let i = 0;
+  const translatedAnalysis: AnalysisResult = {
+    ...analysis,
+    summary: translatedStrings[i++] || analysis.summary,
+    risks: analysis.risks.map(r => ({
+      ...r,
+      title: translatedStrings[i++] || r.title,
+      description: translatedStrings[i++] || r.description,
+      consequence: translatedStrings[i++] || r.consequence,
+    })),
+    consequences: analysis.consequences.map(c => translatedStrings[i++] || c)
+  };
+
+  return translatedAnalysis;
 }
 const demoHinglishTranslation: AnalysisResult = {
   documentName: "service-agreement.pdf",
