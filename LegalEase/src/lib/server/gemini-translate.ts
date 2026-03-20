@@ -15,13 +15,15 @@ export async function translateAnalysisWithGemini(
   const targetLangName = languageMap[targetLanguage];
   const payloadStr = JSON.stringify(analysis, null, 2);
   const prompt = `
-You are an expert legal translator. Translate the following contract analysis JSON from English to ${targetLangName}.
+You are a friendly, helpful AI translating a legal contract analysis from English to ${targetLangName}.
 
 STRICT RULES:
-1. ONLY translate the string values. DO NOT translate the JSON keys (e.g., keep "documentName", "summary", "riskScore", "confidenceScore", "risks", "id", "title", "level", "description", "consequence", "consequences").
+1. ONLY translate the string values. DO NOT translate the JSON keys.
 2. DO NOT change the "level" values ("low", "medium", "high"). Keep them in English.
-3. Keep legal terminology accurate and professional in ${targetLangName}.
-4. Return ONLY the translated JSON matching the exact original structure. No markdown wrapping.
+3. TONE: Use simple, everyday language that a normal person can understand (8th-grade level).
+${targetLanguage === "hi" ? "4. For Hindi, use simple Hindi with a slight Hinglish tone. Avoid heavy/legal shuddh Hindi. Keep it natural and conversational. (e.g. Instead of 'यह धारा असीमित दायित्व लगाती है', use 'इसका मतलब है कि आपको नुकसान का पूरा पैसा देना पड़ सकता है, चाहे गलती आपकी पूरी न हो।')" : "4. Avoid complex or formal legal vocabulary. Keep it natural, conversational, and slightly cautionary when needed."}
+5. Keep responses SHORT and easy to scan.
+6. Return ONLY the translated JSON matching the exact original structure. No markdown wrapping.
 
 Original JSON:
 ${payloadStr}
@@ -50,44 +52,44 @@ ${payloadStr}
 // Fallback logic for demo
 const demoHindiTranslation: AnalysisResult = {
   documentName: "service-agreement.pdf",
-  summary: "à¤‡à¤¸ à¤¸à¥‡à¤µà¤¾ à¤¸à¤®à¤à¥Œà¤¤à¥‡ à¤®à¥‡à¤‚ à¤µà¥à¤¯à¤¾à¤ªà¤• à¤•à¥à¤·à¤¤à¤¿à¤ªà¥‚à¤°à¥à¤¤à¤¿ à¤¦à¤¾à¤¯à¤¿à¤¤à¥à¤µ, à¤¸à¥à¤µà¤¤à¤ƒ-à¤¨à¤µà¥€à¤¨à¥€à¤•à¤°à¤£ à¤µà¥à¤¯à¤µà¤¹à¤¾à¤°, à¤”à¤° à¤ªà¥à¤°à¤¦à¤¾à¤¤à¤¾ à¤•à¥‡ à¤ªà¤•à¥à¤· à¤®à¥‡à¤‚ à¤¸à¤®à¤¾à¤ªà¥à¤¤à¤¿ à¤•à¥€ à¤­à¤¾à¤·à¤¾ à¤¶à¤¾à¤®à¤¿à¤² à¤¹à¥ˆà¥¤",
+  summary: "Humein is contract mein kuch tricky cheezein mili hain. Yeh aapse bahut risk lene ko kehta hai, time se pehle contract chhodna mushkil banata hai, aur agar payment late hui toh heavy penalty lag sakti hai.",
   riskScore: 78,
   confidenceScore: 91,
   risks: [
     {
       id: "liability-1",
-      title: "à¤…à¤¸à¤®à¤®à¤¿à¤¤ à¤¦à¤¾à¤¯à¤¿à¤¤à¥à¤µ à¤¶à¤°à¥à¤¤à¥‡à¤‚",
+      title: "Shayad aapko sab kuch pay karna pade",
       level: "high",
-      description: "à¤†à¤ªà¤•à¤¾ à¤œà¥‹à¤–à¤¿à¤® à¤ªà¥à¤°à¤¦à¤¾à¤¤à¤¾ à¤•à¥€ à¤¦à¥‡à¤¯à¤¤à¤¾ à¤¸à¥€à¤®à¤¾ à¤¸à¥‡ à¤…à¤§à¤¿à¤• à¤µà¥à¤¯à¤¾à¤ªà¤• à¤ªà¥à¤°à¤¤à¥€à¤¤ à¤¹à¥‹à¤¤à¤¾ à¤¹à¥ˆ, à¤œà¥‹ à¤œà¥‹à¤–à¤¿à¤® à¤•à¤¾ à¤…à¤¸à¤®à¤¾à¤¨ à¤†à¤µà¤‚à¤Ÿà¤¨ à¤¬à¤¨à¤¾à¤¤à¤¾ à¤¹à¥ˆà¥¤",
-      consequence: "à¤•à¥‹à¤ˆ à¤­à¥€ à¤µà¤¿à¤µà¤¾à¤¦ à¤†à¤ªà¤•à¥‹ à¤‰à¤¨ à¤¨à¥à¤•à¤¸à¤¾à¤¨à¥‹à¤‚ à¤•à¥‹ à¤•à¤µà¤° à¤•à¤°à¤¨à¥‡ à¤•à¥‡ à¤²à¤¿à¤ à¤›à¥‹à¤¡à¤¼ à¤¸à¤•à¤¤à¤¾ à¤¹à¥ˆ à¤œà¤¿à¤¨à¥à¤¹à¥‡à¤‚ à¤¦à¥‚à¤¸à¤°à¥‡ à¤ªà¤•à¥à¤· à¤¨à¥‡ à¤¸à¤‚à¤µà¤¿à¤¦à¤¾à¤¤à¥à¤®à¤• à¤°à¥‚à¤ª à¤¸à¥‡ à¤…à¤ªà¤¨à¥‡ à¤²à¤¿à¤ à¤¸à¥€à¤®à¤¿à¤¤ à¤•à¤° à¤²à¤¿à¤¯à¤¾ à¤¹à¥ˆà¥¤",
+      description: "Company ne apna nuksan toh limit kar diya hai, par aapko aisi koi protection nahi di hai.",
+      consequence: "Agar koi badi problem hoti hai, toh aapko ek bada bill pay karna pad sakta hai, chahe aapki poori galti na bhi ho."
     },
     {
       id: "term-1",
-      title: "à¤²à¤˜à¥ à¤¸à¤®à¤¾à¤ªà¥à¤¤à¤¿ à¤¸à¥‚à¤šà¤¨à¤¾ à¤…à¤µà¤§à¤¿",
+      title: "Contract chhodne ke liye bahut kam time hai",
       level: "medium",
-      description: "à¤¸à¤®à¤à¥Œà¤¤à¤¾ à¤à¤• à¤›à¥‹à¤Ÿà¥€ à¤¸à¥‚à¤šà¤¨à¤¾ à¤µà¤¿à¤‚à¤¡à¥‹ à¤•à¥€ à¤…à¤¨à¥à¤®à¤¤à¤¿ à¤¦à¥‡à¤¤à¤¾ à¤¹à¥ˆ à¤œà¥‹ à¤¸à¥à¤°à¤•à¥à¤·à¤¿à¤¤ à¤¸à¤‚à¤•à¥à¤°à¤®à¤£ à¤•à¥‡ à¤²à¤¿à¤ à¤ªà¤°à¥à¤¯à¤¾à¤ªà¥à¤¤ à¤¸à¤®à¤¯ à¤¨à¤¹à¥€à¤‚ à¤¦à¥‡ à¤¸à¤•à¤¤à¤¾ à¤¹à¥ˆà¥¤",
-      consequence: "à¤¯à¤¦à¤¿ à¤†à¤ªà¤•à¥‡ à¤ªà¤¾à¤¸ à¤ªà¥à¤°à¤¤à¤¿à¤¸à¥à¤¥à¤¾à¤ªà¤¨ à¤ªà¥à¤°à¤•à¥à¤°à¤¿à¤¯à¤¾ à¤¸à¥à¤¥à¤¾à¤ªà¤¿à¤¤ à¤¹à¥‹à¤¨à¥‡ à¤¸à¥‡ à¤ªà¤¹à¤²à¥‡ à¤…à¤¨à¥à¤¬à¤‚à¤§ à¤¸à¤®à¤¾à¤ªà¥à¤¤ à¤¹à¥‹ à¤œà¤¾à¤¤à¤¾ à¤¹à¥ˆ à¤¤à¥‹ à¤¸à¤‚à¤šà¤¾à¤²à¤¨ à¤¬à¤¾à¤§à¤¿à¤¤ à¤¹à¥‹ à¤¸à¤•à¤¤à¤¾ à¤¹à¥ˆà¥¤",
+      description: "Contract aapko notice dene ke liye bahut chota window deta hai, jismey naya intezaam karna mushkil ho sakta hai.",
+      consequence: "Agar contract achanak khatam ho gaya, toh aapka kaam ruk sakta hai jab tak aap nayi company nahi dhoond lete."
     },
     {
       id: "payment-1",
-      title: "à¤‰à¤šà¥à¤š à¤µà¤¿à¤²à¤‚à¤¬ à¤­à¥à¤—à¤¤à¤¾à¤¨ à¤¬à¥à¤¯à¤¾à¤œ",
+      title: "Late payment pe heavy penalty",
       level: "medium",
-      description: "à¤µà¤¿à¤²à¤‚à¤¬-à¤¶à¥à¤²à¥à¤• à¤–à¤‚à¤¡ à¤à¤• à¤®à¤¾à¤¸à¤¿à¤• à¤¬à¥à¤¯à¤¾à¤œ à¤¦à¤° à¤²à¤¾à¤—à¥‚ à¤•à¤°à¤¤à¤¾ à¤¹à¥ˆ à¤œà¥‹ à¤•à¤¿ à¤•à¤ˆ à¤µà¤¾à¤£à¤¿à¤œà¥à¤¯à¤¿à¤• à¤¸à¤®à¤à¥Œà¤¤à¥‹à¤‚ à¤•à¥‡ à¤‰à¤ªà¤¯à¥‹à¤— à¤¸à¥‡ à¤…à¤§à¤¿à¤• à¤¹à¥ˆà¥¤",
-      consequence: "à¤µà¤¿à¤²à¤‚à¤¬à¤¿à¤¤ à¤­à¥à¤—à¤¤à¤¾à¤¨ à¤¥à¥‹à¤¡à¤¼à¥‡ à¤¹à¥€ à¤¸à¤®à¤¯ à¤®à¥‡à¤‚ à¤­à¥Œà¤¤à¤¿à¤• à¤°à¥‚à¤ª à¤¸à¥‡ à¤‰à¤šà¥à¤š à¤²à¤¾à¤—à¤¤ à¤®à¥‡à¤‚ à¤¤à¤¬à¥à¤¦à¥€à¤² à¤¹à¥‹ à¤¸à¤•à¤¤à¥‡ à¤¹à¥ˆà¤‚à¥¤",
+      description: "Agar payment late hui toh interest rate bahut zyada hai, jo ki normal business rules ke hisaab se sahi nahi hai.",
+      consequence: "Thodi si bhi payment delay hone par aapka bill bahut jaldi badh sakta hai."
     },
     {
       id: "ip-1",
-      title: "à¤…à¤¸à¥à¤ªà¤·à¥à¤Ÿ à¤¬à¥Œà¤¦à¥à¤§à¤¿à¤• à¤¸à¤‚à¤ªà¤¦à¤¾ à¤¸à¥à¤µà¤¾à¤®à¤¿à¤¤à¥à¤µ",
+      title: "Kaam ka malik kaun hoga, yeh clear nahi hai",
       level: "low",
-      description: "à¤…à¤¨à¥à¤¬à¤‚à¤§ à¤‡à¤¸ à¤¬à¤¾à¤¤ à¤ªà¤° à¤…à¤¸à¤¹à¤®à¤¤à¤¿ à¤•à¥€ à¤—à¥à¤‚à¤œà¤¾à¤‡à¤¶ à¤›à¥‹à¤¡à¤¼à¤¤à¤¾ à¤¹à¥ˆ à¤•à¤¿ à¤•à¥à¤¯à¤¾ à¤ªà¥‚à¤°à¥à¤µ-à¤®à¥Œà¤œà¥‚à¤¦ à¤¸à¤¾à¤®à¤—à¥à¤°à¥€ à¤¬à¤¨à¤¾à¤® à¤¡à¤¿à¤²à¥€à¤µà¤°à¥‡à¤¬à¤²à¥à¤¸ à¤•à¥‡ à¤°à¥‚à¤ª à¤®à¥‡à¤‚ à¤—à¤¿à¤¨à¤¾ à¤œà¤¾à¤¤à¤¾ à¤¹à¥ˆà¥¤",
-      consequence: "à¤¸à¥à¤µà¤¾à¤®à¤¿à¤¤à¥à¤µ à¤µà¤¿à¤µà¤¾à¤¦ à¤‰à¤¤à¥à¤ªà¤¾à¤¦ à¤µà¤¿à¤¤à¤°à¤£ à¤®à¥‡à¤‚ à¤¦à¥‡à¤°à¥€ à¤•à¤° à¤¸à¤•à¤¤à¥‡ à¤¹à¥ˆà¤‚ à¤”à¤° à¤­à¤µà¤¿à¤·à¥à¤¯ à¤®à¥‡à¤‚ à¤•à¤¾à¤® à¤•à¥‡ à¤‰à¤¤à¥à¤ªà¤¾à¤¦ à¤•à¥‡ à¤ªà¥à¤¨: à¤‰à¤ªà¤¯à¥‹à¤— à¤•à¥‹ à¤œà¤Ÿà¤¿à¤² à¤¬à¤¨à¤¾ à¤¸à¤•à¤¤à¥‡ à¤¹à¥ˆà¤‚à¥¤",
-    },
+      description: "Contract is baat pe clear nahi hai ki pehle se banayi hui cheezein kiski hain aur nayi banayi hui cheezein kiski hain.",
+      consequence: "Aage chalkar is baat pe jhagra ho sakta hai ki property kiski hai, jisse aapka future work complicate ho sakta hai."
+    }
   ],
   consequences: [
-    "à¤µà¤¿à¤µà¤¾à¤¦ à¤®à¥‡à¤‚ à¤…à¤ªà¥à¤°à¤¤à¥à¤¯à¤¾à¤¶à¤¿à¤¤ à¤•à¤¾à¤¨à¥‚à¤¨à¥€ à¤¦à¤¾à¤¯à¤¿à¤¤à¥à¤µ",
-    "à¤¤à¥‡à¤œà¥€ à¤¸à¥‡ à¤¨à¤¿à¤•à¤¾à¤¸ à¤¸à¤®à¤¯à¤°à¥‡à¤–à¤¾ à¤¸à¥‡ à¤ªà¤°à¤¿à¤šà¤¾à¤²à¤¨ à¤µà¥à¤¯à¤µà¤§à¤¾à¤¨",
-    "à¤œà¥à¤°à¥à¤®à¤¾à¤¨à¤¾-à¤¶à¥ˆà¤²à¥€ à¤­à¥à¤—à¤¤à¤¾à¤¨ à¤–à¤‚à¤¡à¥‹à¤‚ à¤¸à¥‡ à¤‰à¤šà¥à¤š à¤µà¤¿à¤¤à¥à¤¤à¥€à¤¯ à¤œà¥‹à¤–à¤¿à¤®",
-  ],
+    "Kisi jhagde mein unexpected kharcha aa sakta hai",
+    "Contract jaldi khatam hone se kaam ruk sakta hai",
+    "Late payment fees se aapka financial nuksan ho sakta hai"
+  ]
 };
 
 export function getDemoTranslation(analysis: AnalysisResult, targetLanguage: "hi" | "ta" | "te"): AnalysisResult {
