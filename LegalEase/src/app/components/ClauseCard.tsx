@@ -23,25 +23,39 @@ export function ClauseCard({
   delay = 0,
   targetLanguage = "en",
 }: ClauseCardProps) {
+  const getStr = (en: string, hi: string, ta: string, te: string) => {
+    if (targetLanguage === 'hi') return hi;
+    if (targetLanguage === 'ta') return ta;
+    if (targetLanguage === 'te') return te;
+    return en;
+  };
+
+  const t = {
+    whatThisMeans: getStr("What this means:", "इसका क्या मतलब है:", "இதன் பொருள் என்ன:", "దీని అర్థం ఏమిటి:"),
+    warning: getStr("Warning: Real-world consequence", "चेतावनी: वास्तविक दुनिया का परिणाम", "எச்சரிக்கை: நிஜ உலக விளைவு", "హెచ్చరిక: వాస్తవ ప్రపంచ పరిణామం"),
+    technical: getStr("Technical:", "तकनीकी:", "தொழில்நுட்பம்:", "సాంకేతిక:"),
+    viewInDoc: getStr("View in Document", "दस्तावेज़ में देखें", "ஆவணத்தில் காண்க", "పత్రంలో చూడండి")
+  };
+
   const severityConfig = {
     critical: {
       border: "border-l-[#ef4444]",
       badge: "bg-red-100 text-[#ef4444]",
-      label: targetLanguage === "hi" ? "महत्वपूर्ण जोखिम" : "Critical Risk",
+      label: getStr("Critical Risk", "महत्वपूर्ण जोखिम", "முக்கியமான அபாயம்", "క్లిష్టమైన ప్రమాదం"),
       icon: "🔴",
       iconBg: "bg-red-100",
     },
     moderate: {
       border: "border-l-[#f59e0b]",
       badge: "bg-amber-100 text-[#f59e0b]",
-      label: targetLanguage === "hi" ? "मध्यम जोखिम" : "Moderate Risk",
+      label: getStr("Moderate Risk", "मध्यम जोखिम", "மிதமான அபாயம்", "మితమైన ప్రమాదం"),
       icon: "🟡",
       iconBg: "bg-amber-100",
     },
     informational: {
       border: "border-l-[#3b82f6]",
       badge: "bg-blue-100 text-[#3b82f6]",
-      label: targetLanguage === "hi" ? "समीक्षा की सिफारिश की गई" : "Review Recommended",
+      label: getStr("Review Recommended", "समीक्षा की सिफारिश की गई", "மதிப்பாய்வு பரிந்துரைக்கப்படுகிறது", "సమీక్ష సిఫార్సు చేయబడింది"),
       icon: "🟢",
       iconBg: "bg-blue-100",
     },
@@ -82,7 +96,7 @@ export function ClauseCard({
         <div className="mb-1 flex items-center gap-1.5 text-xs text-muted-foreground">
           <AlertCircle className="h-3.5 w-3.5" />
           <span style={{ fontWeight: 600 }}>
-            {targetLanguage === "hi" ? "इसका क्या मतलब है:" : "What this means:"}
+            {t.whatThisMeans}
           </span>
         </div>
         <p className="text-sm leading-relaxed">{description}</p>
@@ -94,7 +108,7 @@ export function ClauseCard({
             <span className="mt-0.5 text-base leading-none">⚠️</span>
             <div>
               <span className="mb-1 block text-[10px] uppercase tracking-wider text-amber-900" style={{ fontWeight: 800 }}>
-                {targetLanguage === "hi" ? "चेतावनी: वास्तविक दुनिया का परिणाम" : "Warning: Real-world consequence"}
+                {t.warning}
               </span>
               <p className="text-sm text-amber-950" style={{ fontWeight: 500 }}>
                 {consequence}
@@ -108,7 +122,7 @@ export function ClauseCard({
       {technicalDetails && (
         <div className="mb-3 text-xs text-muted-foreground">
           <span style={{ fontWeight: 600 }}>
-            {targetLanguage === "hi" ? "तकनीकी:" : "Technical:"}
+            {t.technical}
           </span> {technicalDetails}
         </div>
       )}
@@ -120,7 +134,7 @@ export function ClauseCard({
         style={{ fontWeight: 600 }}
       >
         <ExternalLink className="h-3.5 w-3.5" />
-        {targetLanguage === "hi" ? "दस्तावेज़ में देखें" : "View in Document"}
+        {t.viewInDoc}
       </button>
     </div>
   );

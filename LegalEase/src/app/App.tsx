@@ -55,6 +55,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"document" | "analysis">("document");
   const [activeHighlight, setActiveHighlight] = useState<string | undefined>();
+  const [translationsCache, setTranslationsCache] = useState<Record<string, AnalysisResult>>({});
 
   const hasDocument = selectedFile !== null;
   const showResults = analysis !== null;
@@ -75,12 +76,29 @@ export default function App() {
     setActiveHighlight(undefined);
     setActiveTab("document");
     setIsAnalyzing(true);
+    setTranslationsCache({});
 
     try {
       const result = await analyzeDocument(file);
       setOriginalAnalysis(result.data);
       setAnalysis(result.data);
       setAnalysisMode(result.mode);
+      setTranslationsCache({ en: result.data });
+
+      // Start pre-fetching translations in the background for zero-latency switching
+      Promise.all([
+        translateDocument(result.data, "hi").catch(() => null),
+        translateDocument(result.data, "ta").catch(() => null),
+        translateDocument(result.data, "te").catch(() => null),
+      ]).then(([hiRes, taRes, teRes]) => {
+        setTranslationsCache((prev) => ({
+          ...prev,
+          ...(hiRes && { hi: hiRes.data as AnalysisResult }),
+          ...(taRes && { ta: taRes.data as AnalysisResult }),
+          ...(teRes && { te: teRes.data as AnalysisResult }),
+        }));
+      });
+
     } catch (analysisError) {
       setError(
         analysisError instanceof Error
@@ -97,7 +115,13 @@ export default function App() {
     setTargetLanguage(lang);
     if (!originalAnalysis) return;
 
-    // Reset error if switching languages
+    // Check if we already have the translation cached
+    if (translationsCache[lang]) {
+      setAnalysis(translationsCache[lang]);
+      return;
+    }
+
+    // Reset error if switching languages manually (fallback)
     setError(null);
     setIsTranslating(true);
 
@@ -106,7 +130,8 @@ export default function App() {
         originalAnalysis,
         lang as "en" | "hi" | "ta" | "te"
       );
-      setAnalysis(result.data);
+      setAnalysis(result.data as AnalysisResult);
+      setTranslationsCache((prev) => ({ ...prev, [lang]: result.data as AnalysisResult }));
       // We keep the original analysis mode (whether it was demo or live)
     } catch (err) {
       console.error("Translation error:", err);
@@ -128,6 +153,7 @@ export default function App() {
     setActiveTab("document");
     setIsAnalyzing(false);
     setIsTranslating(false);
+    setTranslationsCache({});
   };
 
   const handleViewInDocument = (clauseId: string) => {

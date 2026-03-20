@@ -68,21 +68,28 @@ export function RiskAnalysisPanel({
     return null;
   }
 
+  const getStr = (en: string, hi: string, ta: string, te: string) => {
+    if (targetLanguage === 'hi') return hi;
+    if (targetLanguage === 'ta') return ta;
+    if (targetLanguage === 'te') return te;
+    return en;
+  };
+
   const t = {
-    liveAnalysis: targetLanguage === "hi" ? "🟢 लाइव AI एनालिसिस" : "🟢 Live AI Analysis",
-    demoMode: targetLanguage === "hi" ? "🟡 डेमो मोड" : "🟡 Demo Mode",
-    demoNote: targetLanguage === "hi" ? "अस्थायी समस्या के कारण डेमो परिणाम दिखा रहे हैं" : "Showing demo results due to temporary issue",
-    confidence: targetLanguage === "hi" ? "कॉन्फिडेंस स्कोर" : "Confidence Score",
-    risksFound: targetLanguage === "hi" ? "जोखिम मिले" : "Risks Found",
-    high: targetLanguage === "hi" ? "हाई" : "high",
-    whatGoesWrong: targetLanguage === "hi" ? "⚠️ क्या गलत हो सकता है?" : "⚠️ What could go wrong?",
-    summaryLabel: targetLanguage === "hi" ? "सारांश (SUMMARY)" : "Summary",
-    simplifiedNote: targetLanguage === "hi" ? "हमने इसे आसान कर दिया है ताकि आप इसे आसानी से समझ सकें।" : "We’ve simplified this so you can understand it easily.",
-    riskBreakdown: targetLanguage === "hi" ? "जोखिम का विवरण" : "Risk Breakdown",
-    priorityNote: targetLanguage === "hi" ? "उच्च प्राथमिकता वाले आइटम विस्तारित हैं" : "High priority items are expanded",
-    catHigh: targetLanguage === "hi" ? "उच्च जोखिम वाली समस्याएं" : "High Risk Issues",
-    catMedium: targetLanguage === "hi" ? "मध्यम जोखिम वाली समस्याएं" : "Moderate Risk Issues",
-    catLow: targetLanguage === "hi" ? "समीक्षा की सिफारिश की गई" : "Review Recommended",
+    liveAnalysis: getStr("🟢 Live AI Analysis", "🟢 लाइव AI एनालिसिस", "🟢 நேரடி AI பகுப்பாய்வு", "🟢 లైవ్ AI విశ్లేషణ"),
+    demoMode: getStr("🟡 Demo Mode", "🟡 डेमो मोड", "🟡 டெமோ பயன்முறை", "🟡 డెమో మోడ్"),
+    demoNote: getStr("Showing demo results due to temporary issue", "अस्थायी समस्या के कारण डेमो परिणाम दिखा रहे हैं", "தற்காலிக சிக்கல் காரணமாக டெமோ முடிவுகள் காட்டப்படுகின்றன", "తాత్కాలిక సమస్య కారణంగా డెమో ఫలితాలు చూపుతున్నాము"),
+    confidence: getStr("Confidence Score", "कॉन्फिडेंस स्कोर", "நம்பிக்கை மதிப்பெண்", "విశ్వాస స్కోరు"),
+    risksFound: getStr("Risks Found", "जोखिम मिले", "கண்டறியப்பட்ட அபாயங்கள்", "ప్రమాదాలు కనుగొనబడ్డాయి"),
+    high: getStr("high", "हाई", "உயர்", "అధిక"),
+    whatGoesWrong: getStr("⚠️ What could go wrong?", "⚠️ क्या गलत हो सकता है?", "⚠️ என்ன தவறாக நடக்கலாம்?", "⚠️ ఏమి తప్పు జరగవచ్చు?"),
+    summaryLabel: getStr("Summary", "सारांश (SUMMARY)", "சுருக்கம் (SUMMARY)", "సారాంశం (SUMMARY)"),
+    simplifiedNote: getStr("We’ve simplified this so you can understand it easily.", "हमने इसे आसान कर दिया है ताकि आप इसे आसानी से समझ सकें।", "நீங்கள் எளிதாக புரிந்து கொள்ள முடியும் என்பதற்காக இதை எளிதாக்கியுள்ளோம்.", "మీరు సులభంగా అర్థం చేసుకోవడానికి మేము దీన్ని సరళీకృతం చేసాము."),
+    riskBreakdown: getStr("Risk Breakdown", "जोखिम का विवरण", "அபாய விவரம்", "ప్రమాదాల విచ్ఛిన్నం"),
+    priorityNote: getStr("High priority items are expanded", "उच्च प्राथमिकता वाले आइटम विस्तारित हैं", "முன்னுரிமை உருப்படிகள் விரிவாக்கப்பட்டுள்ளன", "అధిక ప్రాధాన్యత ఉన్నవి విస్తరించబడ్డాయి"),
+    catHigh: getStr("High Risk Issues", "उच्च जोखिम वाली समस्याएं", "உயர் அபாய சிக்கல்கள்", "అధిక ప్రమాద సమస్యలు"),
+    catMedium: getStr("Moderate Risk Issues", "मध्यम जोखिम वाली समस्याएं", "மிதமான அபாய சிக்கல்கள்", "మితమైన ప్రమాద సమస్యలు"),
+    catLow: getStr("Review Recommended", "समीक्षा की सिफारिश की गई", "மதிப்பாய்வு பரிந்துரைக்கப்படுகிறது", "సమీక్ష సిఫార్సు చేయబడింది"),
   };
 
   const riskLevel = scoreToRiskLevel(analysis.riskScore);

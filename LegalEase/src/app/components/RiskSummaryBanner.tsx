@@ -13,6 +13,19 @@ export function RiskSummaryBanner({
   primaryIssues,
   targetLanguage = "en",
 }: RiskSummaryBannerProps) {
+  const getStr = (en: string, hi: string, ta: string, te: string) => {
+    if (targetLanguage === 'hi') return hi;
+    if (targetLanguage === 'ta') return ta;
+    if (targetLanguage === 'te') return te;
+    return en;
+  };
+
+  const t = {
+    heroQuestion: getStr("How Risky is This Contract?", "यह अनुबंध कितना जोखिम भरा है?", "இந்த ஒப்பந்தம் எவ்வளவு ஆபத்தானது?", "ఈ ఒప్పందం ఎంత ప్రమాదకరం?"),
+    scoreSubtext: getStr("Higher score = more risk", "अधिक स्कोर = अधिक जोखिम", "அதிக மதிப்பெண் = அதிக அபாயம்", "అధిక స్కోరు = అధిక ప్రమాదం"),
+    keyConcerns: getStr("Key concerns:", "मुख्य चिंताएं:", "முக்கிய கவலைகள்:", "ముఖ్య ఆందోళనలు:")
+  };
+
   const config = {
     low: {
       icon: CheckCircle,
@@ -20,8 +33,8 @@ export function RiskSummaryBanner({
       border: "border-green-200",
       iconColor: "text-green-600",
       textColor: "text-green-900",
-      label: targetLanguage === "hi" ? "कम जोखिम" : "LOW RISK",
-      message: targetLanguage === "hi" ? "यह अनुबंध मामूली चिंताओं के साथ अपेक्षाकृत सुरक्षित प्रतीत होता है।" : "This contract appears relatively safe with minor concerns.",
+      label: getStr("LOW RISK", "कम जोखिम", "குறைந்த அபாயம்", "తక్కువ ప్రమాదం"),
+      message: getStr("This contract appears relatively safe with minor concerns.", "यह अनुबंध मामूली चिंताओं के साथ अपेक्षाकृत सुरक्षित प्रतीत होता है।", "இந்த ஒப்பந்தம் ஒப்பீட்டளவில் பாதுகாப்பானதாகத் தெரிகிறது.", "ఈ ఒప్పందం సాపేక్షంగా సురక్షితంగా ఉన్నట్లు కనిపిస్తోంది."),
     },
     medium: {
       icon: AlertTriangle,
@@ -29,8 +42,8 @@ export function RiskSummaryBanner({
       border: "border-amber-200",
       iconColor: "text-amber-600",
       textColor: "text-amber-900",
-      label: targetLanguage === "hi" ? "मध्यम जोखिम" : "MEDIUM RISK",
-      message: targetLanguage === "hi" ? "इस अनुबंध में मध्यम चिंताएं हैं जिनकी समीक्षा की जानी चाहिए।" : "This contract has moderate concerns that should be reviewed.",
+      label: getStr("MEDIUM RISK", "मध्यम जोखिम", "மிதமான அபாயம்", "మితమైన ప్రమాదం"),
+      message: getStr("This contract has moderate concerns that should be reviewed.", "इस अनुबंध में मध्यम चिंताएं हैं जिनकी समीक्षा की जानी चाहिए।", "இந்த ஒப்பந்தத்தில் மிதமான கவலைகள் உள்ளன, அவை மதிப்பாய்வு செய்யப்பட வேண்டும்.", "ఈ ఒప్పందంలో కొన్ని మితమైన ఆందోళనలు ఉన్నాయి."),
     },
     high: {
       icon: ShieldAlert,
@@ -38,8 +51,8 @@ export function RiskSummaryBanner({
       border: "border-red-200",
       iconColor: "text-red-600",
       textColor: "text-red-900",
-      label: targetLanguage === "hi" ? "उच्च जोखिम" : "HIGH RISK",
-      message: targetLanguage === "hi" ? "इस अनुबंध में महत्वपूर्ण जोखिम हैं जिन पर तुरंत ध्यान देने की आवश्यकता है।" : "This contract has significant risks that need immediate attention.",
+      label: getStr("HIGH RISK", "उच्च जोखिम", "உயர் அபாயம்", "అధిక ప్రమాదం"),
+      message: getStr("This contract has significant risks that need immediate attention.", "इस अनुबंध में महत्वपूर्ण जोखिम हैं जिन पर तुरंत ध्यान देने की आवश्यकता है।", "இந்த ஒப்பந்தத்தில் குறிப்பிடத்தக்க அபாயங்கள் உள்ளன, அவை உடனடியாக கவனிக்கப்பட வேண்டும்.", "ఈ ఒప్పందంలో వెంటనే గమనించాల్సిన ముఖ్యమైన ప్రమాదాలు ఉన్నాయి."),
     },
   };
 
@@ -59,7 +72,7 @@ export function RiskSummaryBanner({
           className={`text-sm uppercase tracking-[0.1em] ${style.textColor}`}
           style={{ fontWeight: 800 }}
         >
-          {targetLanguage === "hi" ? "यह अनुबंध कितना जोखिम भरा है?" : "How Risky is This Contract?"}
+          {t.heroQuestion}
         </span>
       </div>
 
@@ -72,7 +85,7 @@ export function RiskSummaryBanner({
           <span className="text-3xl opacity-50 md:text-4xl">/100</span>
         </div>
         <span className={`text-xs mt-1 mb-3 opacity-80 ${style.textColor}`}>
-          {targetLanguage === "hi" ? "अधिक स्कोर = अधिक जोखिम" : "Higher score = more risk"}
+          {t.scoreSubtext}
         </span>
       </div>
 
@@ -90,7 +103,7 @@ export function RiskSummaryBanner({
       {primaryIssues.length > 0 && (
         <div className={`mt-2 rounded-lg bg-white/50 px-4 py-3 text-sm shadow-sm backdrop-blur-sm ${style.textColor}`}>
           <strong style={{ fontWeight: 700 }}>
-            {targetLanguage === "hi" ? "मुख्य चिंताएं:" : "Key concerns:"}
+            {t.keyConcerns}
           </strong>{" "}
           <span style={{ fontWeight: 500 }}>{primaryIssues.join(", ")}</span>
         </div>
