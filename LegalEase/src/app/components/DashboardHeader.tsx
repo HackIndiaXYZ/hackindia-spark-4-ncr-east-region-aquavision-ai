@@ -88,13 +88,25 @@ export function DashboardHeader({
                     value="en"
                     className="cursor-pointer rounded px-3 py-2 text-foreground outline-none hover:bg-accent focus:bg-accent"
                   >
-                    <Select.ItemText>EN</Select.ItemText>
+                    <Select.ItemText>English</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item
+                    value="hinglish"
+                    className="cursor-pointer rounded px-3 py-2 text-foreground outline-none hover:bg-accent focus:bg-accent"
+                  >
+                    <Select.ItemText>Hinglish</Select.ItemText>
                   </Select.Item>
                   <Select.Item
                     value="hi"
                     className="cursor-pointer rounded px-3 py-2 text-foreground outline-none hover:bg-accent focus:bg-accent"
                   >
                     <Select.ItemText>हिन्दी</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item
+                    value="gu"
+                    className="cursor-pointer rounded px-3 py-2 text-foreground outline-none hover:bg-accent focus:bg-accent"
+                  >
+                    <Select.ItemText>ગુજરાતી</Select.ItemText>
                   </Select.Item>
                   <Select.Item
                     value="ta"

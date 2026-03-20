@@ -4,10 +4,12 @@ import { withGeminiModelFallback } from "@/lib/server/gemini-runtime";
 
 export async function translateAnalysisWithGemini(
   analysis: AnalysisResult,
-  targetLanguage: "hi" | "ta" | "te",
+  targetLanguage: "hi" | "hinglish" | "gu" | "ta" | "te",
 ): Promise<AnalysisResult> {
   const languageMap = {
     hi: "Hindi",
+    hinglish: "Hinglish",
+    gu: "Gujarati",
     ta: "Tamil",
     te: "Telugu",
   };
@@ -21,7 +23,7 @@ STRICT RULES:
 1. ONLY translate the string values. DO NOT translate the JSON keys.
 2. DO NOT change the "level" values ("low", "medium", "high"). Keep them in English.
 3. TONE: Use simple, everyday language that a normal person can understand (8th-grade level).
-${targetLanguage === "hi" ? "4. For Hindi, use simple Hindi with a slight Hinglish tone. Avoid heavy/legal shuddh Hindi. Keep it natural and conversational. (e.g. Instead of 'यह धारा असीमित दायित्व लगाती है', use 'इसका मतलब है कि आपको नुकसान का पूरा पैसा देना पड़ सकता है, चाहे गलती आपकी पूरी न हो।')" : "4. Avoid complex or formal legal vocabulary. Keep it natural, conversational, and slightly cautionary when needed."}
+${targetLanguage === "hinglish" ? "4. Use a slight Hinglish tone. Avoid heavy/legal shuddh Hindi. Keep it conversational. (e.g. Instead of 'यह धारा असीमित दायित्व लगाती है', use 'इसका मतलब है कि आपको नुकसान का पूरा पैसा देना पड़ सकता है, चाहे गलती आपकी पूरी न हो।')" : targetLanguage === "hi" ? "4. Use simple Hindi but avoid English words. Keep it natural." : "4. Avoid complex or formal legal vocabulary. Keep it natural, conversational, and slightly cautionary when needed."}
 5. Keep responses SHORT and easy to scan.
 6. Return ONLY the translated JSON matching the exact original structure. No markdown wrapping.
 
@@ -92,11 +94,62 @@ const demoHindiTranslation: AnalysisResult = {
   ]
 };
 
-export function getDemoTranslation(analysis: AnalysisResult, targetLanguage: "hi" | "ta" | "te"): AnalysisResult {
-  if (targetLanguage === "hi") {
-    // Return hindi translation but keep the user's risk scores and document name just in case they're different
+const demoGujaratiTranslation: AnalysisResult = {
+  documentName: "service-agreement.pdf",
+  summary: "અમને આ કરારમાં કેટલીક મુશ્કેલ બાબતો મળી છે. તે તમને ઘણું જોખમ લેવા માટે કહે છે, વહેલા કરાર છોડવાનું મુશ્કેલ બનાવે છે, અને જો ચુકવણી મોડી થાય તો ભારે દંડ લાદી શકે છે.",
+  riskScore: 78,
+  confidenceScore: 91,
+  risks: [
+    {
+      id: "liability-1",
+      title: "તમારે બધું ચૂકવવું પડી શકે છે",
+      level: "high",
+      description: "કંપનીએ પોતાનું નુકસાન મર્યાદિત કર્યું છે, પરંતુ તમને કોઈ રક્ષણ આપ્યું નથી.",
+      consequence: "જો કોઈ મોટી સમસ્યા ઊભી થાય, તો તમારે મોટું બિલ ચૂકવવું પડી શકે છે."
+    },
+    {
+      id: "term-1",
+      title: "કરાર છોડવા માટે ખૂબ ઓછો સમય",
+      level: "medium",
+      description: "કરાર તમને નોટિસ આપવા માટે ખૂબ જ ટૂંકી વિંડો આપે છે.",
+      consequence: "જો કરાર અચાનક સમાપ્ત થાય છે, તો તમારું કાર્ય અટકી શકે છે."
+    },
+    {
+      id: "payment-1",
+      title: "મોડી ચુકવણી પર ભારે દંડ",
+      level: "medium",
+      description: "જો ચુકવણી મોડી થાય તો વ્યાજ દર ઘણો .ંચો હોય છે.",
+      consequence: "થોડો ચૂકવણીમાં વિલંબ પણ તમારું બિલ ઝડપથી વધારી શકે છે."
+    },
+    {
+      id: "ip-1",
+      title: "મિલકતનો માલિક કોણ છે, તે સ્પષ્ટ નથી",
+      level: "low",
+      description: "કરાર સ્પષ્ટ કરતું નથી કે કઈ વસ્તુઓ કોની છે.",
+      consequence: "આનાથી ભવિષ્યમાં વિવાદ થઈ શકે છે."
+    }
+  ],
+  consequences: [
+    "વિવાદોમાં અણધાર્યા ખર્ચ થઈ શકે છે",
+    "કરાર વહેલો સમાપ્ત થવાથી કામ અટકી શકે છે",
+    "મોડી ચૂકવણીથી નાણાકીય નુકસાન થઈ શકે છે"
+  ]
+};
+
+export function getDemoTranslation(analysis: AnalysisResult, targetLanguage: "hi" | "hinglish" | "gu" | "ta" | "te"): AnalysisResult {
+  if (targetLanguage === "hinglish" || targetLanguage === "hi") {
+    // Return hindi/hinglish translation but keep the user's risk scores and document name just in case they're different
     return {
       ...demoHindiTranslation,
+      documentName: analysis.documentName,
+      riskScore: analysis.riskScore,
+      confidenceScore: analysis.confidenceScore,
+    };
+  }
+  
+  if (targetLanguage === "gu") {
+    return {
+      ...demoGujaratiTranslation,
       documentName: analysis.documentName,
       riskScore: analysis.riskScore,
       confidenceScore: analysis.confidenceScore,

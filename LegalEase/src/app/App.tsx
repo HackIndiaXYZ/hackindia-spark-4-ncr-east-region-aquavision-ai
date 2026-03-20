@@ -87,13 +87,17 @@ export default function App() {
 
       // Start pre-fetching translations in the background for zero-latency switching
       Promise.all([
+        translateDocument(result.data, "hinglish").catch(() => null),
         translateDocument(result.data, "hi").catch(() => null),
+        translateDocument(result.data, "gu").catch(() => null),
         translateDocument(result.data, "ta").catch(() => null),
         translateDocument(result.data, "te").catch(() => null),
-      ]).then(([hiRes, taRes, teRes]) => {
+      ]).then(([hinglishRes, hiRes, guRes, taRes, teRes]) => {
         setTranslationsCache((prev) => ({
           ...prev,
+          ...(hinglishRes && { hinglish: hinglishRes.data as AnalysisResult }),
           ...(hiRes && { hi: hiRes.data as AnalysisResult }),
+          ...(guRes && { gu: guRes.data as AnalysisResult }),
           ...(taRes && { ta: taRes.data as AnalysisResult }),
           ...(teRes && { te: teRes.data as AnalysisResult }),
         }));
@@ -128,7 +132,7 @@ export default function App() {
     try {
       const result = await translateDocument(
         originalAnalysis,
-        lang as "en" | "hi" | "ta" | "te"
+        lang as "en" | "hi" | "hinglish" | "gu" | "ta" | "te"
       );
       setAnalysis(result.data as AnalysisResult);
       setTranslationsCache((prev) => ({ ...prev, [lang]: result.data as AnalysisResult }));

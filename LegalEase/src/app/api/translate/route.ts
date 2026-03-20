@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       });
     }
 
-    if (!["hi", "ta", "te"].includes(targetLanguage)) {
+    if (!["hi", "hinglish", "gu", "ta", "te"].includes(targetLanguage)) {
       return NextResponse.json(
         { ok: false, error: "Unsupported target language." },
         { status: 400 },
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
         mode: "demo",
         data: getDemoTranslation(
           analysis,
-          targetLanguage as "hi" | "ta" | "te",
+          targetLanguage as "hi" | "hinglish" | "gu" | "ta" | "te",
         ),
       });
     }
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     try {
       const translated = await translateAnalysisWithGemini(
         analysis,
-        targetLanguage as "hi" | "ta" | "te",
+        targetLanguage as "hi" | "hinglish" | "gu" | "ta" | "te",
       );
 
       return NextResponse.json({
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
         mode: "demo",
         data: getDemoTranslation(
           analysis,
-          targetLanguage as "hi" | "ta" | "te",
+          targetLanguage as "hi" | "hinglish" | "gu" | "ta" | "te",
         ),
         fallbackReason,
       });

@@ -3,51 +3,51 @@ import type { AnalysisResult } from "@/types/analysis";
 export const demoAnalysis: AnalysisResult = {
   documentName: "service-agreement.pdf",
   summary:
-    "This service agreement includes broad indemnity obligations, auto-renewal behavior, and termination language that favors the provider.",
+    "We found a few tricky parts in this contract. It asks you to take on a lot of risk, makes it hard to leave early, and could charge you big penalties if you're late on payments.",
   riskScore: 78,
   confidenceScore: 91,
   risks: [
     {
       id: "liability-1",
-      title: "Asymmetric Liability Terms",
+      title: "You might have to pay for everything",
       level: "high",
       description:
-        "Your exposure appears broader than the provider's liability cap, which creates an uneven allocation of risk.",
+        "The company limits how much they have to pay if things go wrong, but they don't give you the same protection.",
       consequence:
-        "A dispute could leave you covering losses that the other side has contractually limited for itself.",
+        "If there's a fight or mistake, you might end up paying a huge bill that isn't completely your fault.",
     },
     {
       id: "term-1",
-      title: "Short Termination Notice Period",
+      title: "You don't have enough time to back out",
       level: "medium",
       description:
-        "The agreement allows a short notice window that may not give enough time for a safe transition.",
+        "If you want to stop working with them, you have to tell them very quickly. The timeline is extremely tight.",
       consequence:
-        "Operations could be disrupted if the contract ends before you have a replacement process in place.",
+        "You might get stuck without a backup plan or have your business disrupted because you couldn't find a replacement in time.",
     },
     {
       id: "payment-1",
-      title: "High Late Payment Interest",
+      title: "The late fees are extremely high",
       level: "medium",
       description:
-        "The late-fee clause applies a monthly interest rate above what many commercial agreements use.",
+        "If you miss a payment deadline, the extra interest they charge you is way higher than normal.",
       consequence:
-        "Delayed payments could snowball into materially higher costs over a short period.",
+        "A small delay in payment could accidentally snowball into a massive extra charge out of nowhere.",
     },
     {
       id: "ip-1",
-      title: "Ambiguous IP Ownership",
+      title: "It's not clear who owns the final work",
       level: "low",
       description:
-        "The contract leaves room for disagreement over what counts as pre-existing materials versus deliverables.",
+        "The contract doesn't clearly say if you totally own the work you create, or if they own parts of it.",
       consequence:
-        "Ownership disputes can delay product delivery and complicate future reuse of work product.",
+        "They might try to block you from reusing your own work or ideas for other projects in the future.",
     },
   ],
   consequences: [
-    "Unexpected legal liability in a dispute",
-    "Operational disruption from a fast exit timeline",
-    "Higher financial exposure from penalty-style payment clauses",
+    "Unexpected legal bills if a mistake happens.",
+    "Stressful, rushed operations if you need to cancel.",
+    "Huge penalty costs if a payment gets delayed.",
   ],
 };
 

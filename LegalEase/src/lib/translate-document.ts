@@ -9,7 +9,7 @@ type TranslateResponse = {
 
 export async function translateDocument(
   analysis: AnalysisResult,
-  targetLanguage: "en" | "hi" | "ta" | "te"
+  targetLanguage: "en" | "hi" | "hinglish" | "gu" | "ta" | "te"
 ) {
   if (targetLanguage === "en") {
     // English is the base language, we don't need to hit the API if the original analysis is already in English.
