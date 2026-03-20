@@ -196,6 +196,8 @@ export default function App() {
           <div className="hidden h-full w-full md:flex print:block print:h-auto print:w-full">
             <div className="h-full w-[55%] border-r border-border print:hidden">
               <PDFViewer
+                file={selectedFile}
+                analysisMode={analysisMode}
                 highlights={highlights}
                 activeHighlight={activeHighlight}
                 onHighlightClick={handleHighlightClick}
@@ -217,6 +219,8 @@ export default function App() {
           <div className="hidden h-full w-full flex-col sm:flex md:hidden">
             <div className="h-1/2 border-b border-border">
               <PDFViewer
+                file={selectedFile}
+                analysisMode={analysisMode}
                 highlights={highlights}
                 activeHighlight={activeHighlight}
                 onHighlightClick={handleHighlightClick}
@@ -239,6 +243,8 @@ export default function App() {
             {activeTab === "document" ? (
               <div className="h-full">
                 <PDFViewer
+                  file={selectedFile}
+                  analysisMode={analysisMode}
                   highlights={highlights}
                   activeHighlight={activeHighlight}
                   onHighlightClick={handleHighlightClick}

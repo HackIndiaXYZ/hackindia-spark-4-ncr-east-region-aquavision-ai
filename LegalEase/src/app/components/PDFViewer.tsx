@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Info } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
 interface Highlight {
@@ -12,16 +12,35 @@ interface Highlight {
 }
 
 interface PDFViewerProps {
+  file?: File | null;
+  analysisMode?: "demo" | "live" | null;
   highlights: Highlight[];
   activeHighlight?: string;
   onHighlightClick?: (id: string) => void;
 }
 
-export function PDFViewer({ highlights, activeHighlight, onHighlightClick }: PDFViewerProps) {
+export function PDFViewer({
+  file,
+  analysisMode,
+  highlights,
+  activeHighlight,
+  onHighlightClick,
+}: PDFViewerProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(100);
   const [hoveredHighlight, setHoveredHighlight] = useState<string | undefined>();
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const totalPages = 6;
+
+  useEffect(() => {
+    if (file && analysisMode !== "demo") {
+      const url = URL.createObjectURL(file);
+      setPdfUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setPdfUrl(null);
+    }
+  }, [file, analysisMode]);
 
   const pageHighlights = highlights.filter((h) => h.page === currentPage);
 
@@ -50,6 +69,32 @@ export function PDFViewer({ highlights, activeHighlight, onHighlightClick }: PDF
         return "🟡";
     }
   };
+
+  if (pdfUrl) {
+    return (
+      <div className="h-full w-full bg-[#323639] md:p-4">
+        <object
+          data={`${pdfUrl}#toolbar=0&navpanes=0`}
+          type="application/pdf"
+          className="h-full w-full shadow-lg md:rounded-lg"
+        >
+          <div className="flex h-full items-center justify-center bg-gray-100 p-8 text-center text-muted-foreground">
+            <div>
+              <p className="mb-2">Your browser does not support inline PDFs.</p>
+              <a
+                href={pdfUrl}
+                download={file?.name || "document.pdf"}
+                className="text-indigo-600 underline hover:text-indigo-800"
+              >
+                Download the file
+              </a>
+              {" "}to view it.
+            </div>
+          </div>
+        </object>
+      </div>
+    );
+  }
 
   return (
     <Tooltip.Provider delayDuration={200}>
