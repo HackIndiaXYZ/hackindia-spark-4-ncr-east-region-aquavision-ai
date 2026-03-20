@@ -1,23 +1,27 @@
-import { Download, Globe, Sparkles } from "lucide-react";
+import { Download, Globe, Sparkles, RotateCcw } from "lucide-react";
 import * as Select from "@radix-ui/react-select";
 import { ChevronDown } from "lucide-react";
 
 interface DashboardHeaderProps {
   filename?: string;
+  onReset?: () => void;
 }
 
-export function DashboardHeader({ filename }: DashboardHeaderProps) {
+export function DashboardHeader({ filename, onReset }: DashboardHeaderProps) {
   return (
     <header className="fixed left-0 right-0 top-0 z-50 h-14 border-b border-border bg-white shadow-sm md:h-16">
       <div className="flex h-full items-center justify-between px-4 md:px-6">
         {/* Logo */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
-            <span className="text-[#4f46e5]" style={{ fontWeight: 500 }}>
-              AI
+            <span className="text-[#4f46e5]" style={{ fontWeight: 700 }}>
+              Legal
             </span>
-            <span style={{ fontWeight: 500 }}>ContractPro</span>
+            <span style={{ fontWeight: 500 }}>-Ease</span>
           </div>
+          <span className="hidden rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] text-[#4f46e5] md:inline-block" style={{ fontWeight: 600 }}>
+            AI
+          </span>
         </div>
 
         {/* Breadcrumb - centered on desktop, hidden on mobile */}
@@ -27,6 +31,18 @@ export function DashboardHeader({ filename }: DashboardHeaderProps) {
 
         {/* Actions */}
         <div className="flex items-center gap-2 md:gap-3">
+          {/* New Analysis Button - shown when a document is loaded */}
+          {filename && onReset && (
+            <button
+              onClick={onReset}
+              className="flex items-center gap-1.5 rounded-lg border border-border bg-white px-2 py-1.5 text-sm transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring md:px-3 md:py-2"
+              style={{ fontWeight: 500 }}
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span className="hidden md:inline">New Analysis</span>
+            </button>
+          )}
+
           {/* Language Switcher */}
           <Select.Root defaultValue="en">
             <Select.Trigger className="flex items-center gap-1.5 rounded-lg border border-border bg-white px-2 py-1.5 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring md:px-3 md:py-2">
@@ -44,22 +60,22 @@ export function DashboardHeader({ filename }: DashboardHeaderProps) {
                     <Select.ItemText>EN</Select.ItemText>
                   </Select.Item>
                   <Select.Item
-                    value="es"
+                    value="hi"
                     className="cursor-pointer rounded px-3 py-2 text-foreground outline-none hover:bg-accent focus:bg-accent"
                   >
-                    <Select.ItemText>ES</Select.ItemText>
+                    <Select.ItemText>हिन्दी</Select.ItemText>
                   </Select.Item>
                   <Select.Item
-                    value="fr"
+                    value="ta"
                     className="cursor-pointer rounded px-3 py-2 text-foreground outline-none hover:bg-accent focus:bg-accent"
                   >
-                    <Select.ItemText>FR</Select.ItemText>
+                    <Select.ItemText>தமிழ்</Select.ItemText>
                   </Select.Item>
                   <Select.Item
-                    value="de"
+                    value="te"
                     className="cursor-pointer rounded px-3 py-2 text-foreground outline-none hover:bg-accent focus:bg-accent"
                   >
-                    <Select.ItemText>DE</Select.ItemText>
+                    <Select.ItemText>తెలుగు</Select.ItemText>
                   </Select.Item>
                 </Select.Viewport>
               </Select.Content>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { analyzeDocument } from "@/lib/analyze-document";
 import type { AnalysisResult } from "@/types/analysis";
@@ -18,6 +18,31 @@ const loadingSteps = [
   "Preparing dashboard...",
 ];
 
+// Generate staggered positions for PDF highlight overlays from analysis risks
+function deriveHighlights(analysis: AnalysisResult | null) {
+  if (!analysis || analysis.risks.length === 0) return [];
+
+  const severityMap = {
+    high: "critical" as const,
+    medium: "moderate" as const,
+    low: "moderate" as const,
+  };
+
+  return analysis.risks.map((risk, index) => ({
+    id: risk.id,
+    page: 1,
+    severity: severityMap[risk.level],
+    title: risk.title,
+    description: risk.description,
+    position: {
+      top: `${30 + index * 12}%`,
+      left: "10%",
+      width: `${70 + Math.round(Math.random() * 10)}%`,
+      height: "3%",
+    },
+  }));
+}
+
 export default function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
@@ -29,6 +54,7 @@ export default function App() {
 
   const hasDocument = selectedFile !== null;
   const showResults = analysis !== null;
+  const highlights = useMemo(() => deriveHighlights(analysis), [analysis]);
 
   const handleUpload = async (file: File) => {
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
@@ -60,6 +86,16 @@ export default function App() {
     }
   };
 
+  const handleReset = () => {
+    setSelectedFile(null);
+    setAnalysis(null);
+    setAnalysisMode(null);
+    setError(null);
+    setActiveHighlight(undefined);
+    setActiveTab("document");
+    setIsAnalyzing(false);
+  };
+
   const handleViewInDocument = (clauseId: string) => {
     setActiveHighlight(clauseId);
     setActiveTab("document");
@@ -80,47 +116,13 @@ export default function App() {
     }, 100);
   };
 
-  const highlights = [
-    {
-      id: "term-1",
-      page: 1,
-      severity: "moderate" as const,
-      title: "Short Termination Notice Period",
-      description: "30-day notice may be insufficient for complex project transitions.",
-      position: { top: "35%", left: "10%", width: "80%", height: "3%" },
-    },
-    {
-      id: "payment-1",
-      page: 1,
-      severity: "moderate" as const,
-      title: "High Late Payment Interest",
-      description: "2% monthly (24% APR) is above market standard.",
-      position: { top: "47%", left: "10%", width: "75%", height: "3%" },
-    },
-    {
-      id: "ip-1",
-      page: 1,
-      severity: "moderate" as const,
-      title: "Ambiguous IP Ownership",
-      description: "Vague definition of pre-existing materials could cause disputes.",
-      position: { top: "59%", left: "10%", width: "70%", height: "3%" },
-    },
-    {
-      id: "liability-1",
-      page: 1,
-      severity: "critical" as const,
-      title: "Asymmetric Liability Terms",
-      description: "Provider's liability is capped while yours is not.",
-      position: { top: "75%", left: "10%", width: "80%", height: "3%" },
-    },
-  ];
-
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <DashboardHeader
         filename={
           hasDocument ? analysis?.documentName || selectedFile?.name : undefined
         }
+        onReset={handleReset}
       />
 
       {showResults && (
