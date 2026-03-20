@@ -50,7 +50,7 @@ export function ClauseCard({
   return (
     <div
       id={`risk-${id}`}
-      className={`rounded-lg border-l-4 bg-white p-4 shadow-sm transition-all hover:shadow-md ${config.border}`}
+      className={`rounded-xl border-l-4 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${config.border}`}
       style={{
         animation: `slideInRight 0.4s ease-out ${delay}ms both`,
       }}
@@ -85,9 +85,18 @@ export function ClauseCard({
       </div>
 
       {consequence && (
-        <div className="mb-3 rounded-md border border-amber-100 bg-amber-50 p-3 text-sm text-amber-950">
-          <span style={{ fontWeight: 600 }}>Real-world impact:</span>{" "}
-          {consequence}
+        <div className="mb-4 mt-2 overflow-hidden rounded-md border border-amber-200 bg-gradient-to-r from-amber-500/10 to-amber-500/5 shadow-sm">
+          <div className="flex items-start gap-2.5 p-3">
+            <span className="mt-0.5 text-base leading-none">⚠️</span>
+            <div>
+              <span className="mb-1 block text-[10px] uppercase tracking-wider text-amber-900" style={{ fontWeight: 800 }}>
+                Warning: Real-world consequence
+              </span>
+              <p className="text-sm text-amber-950" style={{ fontWeight: 500 }}>
+                {consequence}
+              </p>
+            </div>
+          </div>
         </div>
       )}
 

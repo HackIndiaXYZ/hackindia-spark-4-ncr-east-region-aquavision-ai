@@ -46,35 +46,46 @@ export function RiskSummaryBanner({
 
   return (
     <div
-      className={`${style.bg} ${style.border} border-l-4 p-4 md:p-5`}
+      className={`${style.bg} ${style.border} border-b-4 flex flex-col items-center justify-center p-6 text-center md:p-8`}
       style={{
         animation: "slideDown 0.4s ease-out",
       }}
     >
-      <div className="flex items-start gap-3 md:gap-4">
-        <Icon className={`h-6 w-6 flex-shrink-0 ${style.iconColor} md:h-7 md:w-7`} />
-        <div className="flex-1">
-          <div className="mb-1 flex items-center gap-2">
-            <span
-              className={`text-xs ${style.textColor}`}
-              style={{ fontWeight: 700, letterSpacing: "0.05em" }}
-            >
-              {style.label}
-            </span>
-            <span className={`text-xl ${style.iconColor}`} style={{ fontWeight: 700 }}>
-              {riskScore}/100
-            </span>
-          </div>
-          <p className={`mb-2 ${style.textColor}`} style={{ fontWeight: 600 }}>
-            {style.message}
-          </p>
-          {primaryIssues.length > 0 && (
-            <p className={`text-sm ${style.textColor}`}>
-              <strong>Key concerns:</strong> {primaryIssues.join(", ")}
-            </p>
-          )}
-        </div>
+      <div className="mb-2 flex items-center gap-2">
+        <Icon className={`h-5 w-5 ${style.iconColor}`} />
+        <span
+          className={`text-xs uppercase tracking-[0.15em] ${style.textColor}`}
+          style={{ fontWeight: 800 }}
+        >
+          Overall Risk Score
+        </span>
       </div>
+
+      <div
+        className={`my-2 text-6xl md:text-7xl tracking-tighter ${style.iconColor}`}
+        style={{ fontWeight: 900 }}
+      >
+        {riskScore}
+        <span className="text-3xl opacity-50 md:text-4xl">/100</span>
+      </div>
+
+      <div
+        className={`mb-4 inline-block rounded-full px-4 py-1 text-sm ${style.bg} border ${style.border} ${style.textColor}`}
+        style={{ fontWeight: 700, letterSpacing: "0.05em" }}
+      >
+        {style.label}
+      </div>
+
+      <p className={`mb-3 max-w-md ${style.textColor}`} style={{ fontWeight: 500 }}>
+        {style.message}
+      </p>
+
+      {primaryIssues.length > 0 && (
+        <div className={`mt-2 rounded-lg bg-white/50 px-4 py-3 text-sm shadow-sm backdrop-blur-sm ${style.textColor}`}>
+          <strong style={{ fontWeight: 700 }}>Key concerns:</strong>{" "}
+          <span style={{ fontWeight: 500 }}>{primaryIssues.join(", ")}</span>
+        </div>
+      )}
     </div>
   );
 }

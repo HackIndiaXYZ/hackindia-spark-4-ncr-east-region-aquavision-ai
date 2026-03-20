@@ -103,16 +103,16 @@ export function RiskAnalysisPanel({
           <div className="border-b border-border bg-white px-4 py-3 md:px-6">
             <div className="flex flex-wrap items-center gap-2">
               <span
-                className={`rounded-full px-2.5 py-1 text-xs ${
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs shadow-sm ${
                   analysisMode === "live"
-                    ? "bg-emerald-100 text-emerald-700"
-                    : "bg-amber-100 text-amber-800"
+                    ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                    : "bg-amber-100 text-amber-900 border border-amber-200"
                 }`}
-                style={{ fontWeight: 600 }}
+                style={{ fontWeight: 700, letterSpacing: "0.02em" }}
               >
                 {analysisMode === "live"
-                  ? "Live Analysis"
-                  : "Demo Mode (Fallback)"}
+                  ? "🟢 Live AI Analysis"
+                  : "🟡 Demo Mode"}
               </span>
               {analysisMode === "demo" && (
                 <span className="text-xs text-muted-foreground">

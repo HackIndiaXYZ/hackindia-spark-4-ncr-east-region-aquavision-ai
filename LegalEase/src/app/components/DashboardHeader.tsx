@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 interface DashboardHeaderProps {
   filename?: string;
   onReset?: () => void;
+  onDemoClick?: () => void;
   targetLanguage?: string;
   onLanguageChange?: (lang: string) => void;
   isTranslating?: boolean;
@@ -13,6 +14,7 @@ interface DashboardHeaderProps {
 export function DashboardHeader({
   filename,
   onReset,
+  onDemoClick,
   targetLanguage = "en",
   onLanguageChange,
   isTranslating = false,
@@ -49,6 +51,18 @@ export function DashboardHeader({
             >
               <RotateCcw className="h-3.5 w-3.5" />
               <span className="hidden md:inline">New Analysis</span>
+            </button>
+          )}
+
+          {/* Try Sample Contract Demo Button */}
+          {onDemoClick && (
+            <button
+              onClick={onDemoClick}
+              className="flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2 py-1.5 text-sm text-[#4f46e5] transition-colors hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-[#4f46e5] focus:ring-offset-2 md:px-3 md:py-2"
+              style={{ fontWeight: 600 }}
+            >
+              <span className="hidden md:inline">Try Sample Contract</span>
+              <span className="inline md:hidden">Demo</span>
             </button>
           )}
 

@@ -141,6 +141,15 @@ export default function App() {
     }, 2500);
   };
 
+  const handleDemoTopBar = () => {
+    const demoFile = new File(
+      ["dummy content"],
+      "Acme_Corp_Service_Agreement.pdf",
+      { type: "application/pdf" }
+    );
+    handleUpload(demoFile);
+  };
+
   const handleHighlightClick = (clauseId: string) => {
     setActiveTab("analysis");
 
@@ -157,6 +166,7 @@ export default function App() {
           hasDocument ? analysis?.documentName || selectedFile?.name : undefined
         }
         onReset={handleReset}
+        onDemoClick={!hasDocument ? handleDemoTopBar : undefined}
         targetLanguage={targetLanguage}
         onLanguageChange={handleLanguageChange}
         isTranslating={isTranslating}
