@@ -9,23 +9,24 @@ interface RiskIndicatorBarProps {
 export function RiskIndicatorBar({ score, animate = false, targetLanguage = "en" }: RiskIndicatorBarProps) {
   const [displayScore, setDisplayScore] = useState(animate ? 0 : score);
 
-  const getStr = (en: string, hi: string, hinglish: string, gu: string, ta: string, te: string) => {
+  const getStr = (en: string, hi: string, hinglish: string, gu: string, ta: string, te: string, mr: string) => {
     if (targetLanguage === 'hi') return hi;
     if (targetLanguage === 'hinglish') return hinglish;
     if (targetLanguage === 'gu') return gu;
     if (targetLanguage === 'ta') return ta;
     if (targetLanguage === 'te') return te;
+    if (targetLanguage === 'mr') return mr;
     return en;
   };
 
   const t = {
-    overallRisk: getStr("Overall Risk Score", "कुल जोखिम स्कोर", "Overall Risk Score", "એકંદર જોખમ સ્કોર", "ஒட்டுமொத்த அபாய மதிப்பெண்", "మొత్తం ప్రమాద స్కోరు"),
-    lowRisk: getStr("Low Risk", "कम जोखिम", "Low Risk", "ઓછું જોખમ", "குறைந்த அபாயம்", "తక్కువ ప్రమాదం"),
-    mediumRisk: getStr("Medium Risk", "मध्यम जोखिम", "Medium Risk", "મધ્યમ જોખમ", "மிதமான அபாயம்", "మితమైన ప్రమాదం"),
-    highRisk: getStr("High Risk", "उच्च जोखिम", "High Risk", "ઉચ્ચ જોખમ", "உயர் அபாயம்", "అధిక ప్రమాదం"),
-    low: getStr("Low", "कम", "Low", "ઓછું", "குறைவு", "తక్కువ"),
-    medium: getStr("Medium", "मध्यम", "Medium", "મધ્યમ", "நடுத்தரம்", "మధ్యస్థం"),
-    high: getStr("High", "उच्च", "High", "ઉચ્ચ", "உயர்", "అధిక"),
+    overallRisk: getStr("Overall Risk Score", "कुल जोखिम स्कोर", "Overall Risk Score", "એકંદર જોખમ સ્કોર", "ஒட்டுமொத்த அபாய மதிப்பெண்", "మొత్తం ప్రమాద స్కోరు", "एकूण जोखीम स्कोर"),
+    lowRisk: getStr("Low Risk", "कम जोखिम", "Kam Risk", "ઓછું જોખમ", "குறைந்த அபாயம்", "తక్కువ ప్రమాదం", "कमी जोखीम"),
+    mediumRisk: getStr("Medium Risk", "मध्यम जोखिम", "Medium Risk", "મધ્યમ જોખમ", "மிதமான அபாயம்", "మితమైన ప్రమాదం", "मध्यम जोखीम"),
+    highRisk: getStr("High Risk", "उच्च जोखिम", "High Risk", "ઉચ્ચ જોખમ", "உயர் அபாயம்", "అధిక ప్రమాదం", "उच्च जोखीम"),
+    low: getStr("Low", "कम", "Kam", "ઓછું", "குறைவு", "తక్కువ", "कमी"),
+    medium: getStr("Medium", "मध्यम", "Medium", "મધ્યમ", "நடுத்தரம்", "మధ్యస్థం", "मध्यम"),
+    high: getStr("High", "उच्च", "High", "ઉચ્ચ", "உயர்", "అధిక", "उच्च"),
   };
 
   useEffect(() => {

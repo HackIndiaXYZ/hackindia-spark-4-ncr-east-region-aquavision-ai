@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       },
       hi: {
         targetLanguageCode: "hi-IN",
-        speaker: "anushka",
+        speaker: "priya",
       },
     } as const;
 
@@ -29,35 +29,52 @@ export async function POST(req: Request) {
       );
     }
 
-    // Sarvam AI limit is 500 chars per input string. We chunk by sentences.
+    // Sarvam AI: strict 500 chars per input, max 3 inputs.
+    const MAX_CHUNK = 480; // leave a small buffer under 500
+    const MAX_INPUTS = 3;
+
+    // Truncate to ~1500 chars total (3 chunks × 500) to avoid wasting API calls
+    const truncatedText = text.substring(0, MAX_CHUNK * MAX_INPUTS);
+
     const textChunks: string[] = [];
     let currentChunk = "";
-    
-    // Split by common sentence terminators but keep them
-    const sentences = text.split(/([.!?]+)/);
-    
-    for (let i = 0; i < sentences.length; i++) {
-        const part = sentences[i];
-        if (currentChunk.length + part.length > 490) {
-            if (currentChunk.trim()) textChunks.push(currentChunk.trim());
-            currentChunk = part;
-        } else {
-            currentChunk += part;
+
+    // Split by sentence terminators
+    const sentences = truncatedText.split(/(?<=[.!?])\s+/);
+
+    for (const sentence of sentences) {
+      // If a single sentence is longer than MAX_CHUNK, hard-split it
+      if (sentence.length > MAX_CHUNK) {
+        if (currentChunk.trim()) {
+          textChunks.push(currentChunk.trim());
+          currentChunk = "";
         }
+        for (let j = 0; j < sentence.length; j += MAX_CHUNK) {
+          textChunks.push(sentence.substring(j, j + MAX_CHUNK));
+        }
+        continue;
+      }
+
+      if (currentChunk.length + sentence.length + 1 > MAX_CHUNK) {
+        if (currentChunk.trim()) textChunks.push(currentChunk.trim());
+        currentChunk = sentence;
+      } else {
+        currentChunk += (currentChunk ? " " : "") + sentence;
+      }
     }
     if (currentChunk.trim()) {
-        textChunks.push(currentChunk.trim());
+      textChunks.push(currentChunk.trim());
     }
-    
-    // Safety fallback: limit to max 5 chunks (approx 2500 chars total)
-    const finalInputs = textChunks.slice(0, 5);
-    const selectedVoice = voiceConfig[targetLanguage];
+
+    // Hard limit to 3 chunks
+    const finalInputs = textChunks.slice(0, MAX_INPUTS);
+    const selectedVoice = voiceConfig[targetLanguage === "hi" ? "hi" : "en"];
 
     const payload = {
       inputs: finalInputs.length > 0 ? finalInputs : ["No summary available."],
       target_language_code: selectedVoice.targetLanguageCode,
       speaker: selectedVoice.speaker,
-      pace: 1.0,
+      pace: 1.15,
       speech_sample_rate: 8000,
       enable_preprocessing: true,
       model: "bulbul:v3"

@@ -13,19 +13,20 @@ export function RiskSummaryBanner({
   primaryIssues,
   targetLanguage = "en",
 }: RiskSummaryBannerProps) {
-  const getStr = (en: string, hi: string, hinglish: string, gu: string, ta: string, te: string) => {
+  const getStr = (en: string, hi: string, hinglish: string, gu: string, ta: string, te: string, mr: string) => {
     if (targetLanguage === 'hi') return hi;
     if (targetLanguage === 'hinglish') return hinglish;
     if (targetLanguage === 'gu') return gu;
     if (targetLanguage === 'ta') return ta;
     if (targetLanguage === 'te') return te;
+    if (targetLanguage === 'mr') return mr;
     return en;
   };
 
   const t = {
-    heroQuestion: getStr("How Risky is This Contract?", "यह अनुबंध कितना जोखिम भरा है?", "Yeh contract kitna risky hai?", "આ કરાર કેટલો જોખમી છે?", "இந்த ஒப்பந்தம் எவ்வளவு ஆபத்தானது?", "ఈ ఒప్పందం ఎంత ప్రమాదకరం?"),
-    scoreSubtext: getStr("Higher score = more risk", "अधिक स्कोर = अधिक जोखिम", "Zyada score = zyada risk", "ઉચ્ચ સ્કોર = વધુ જોખમ", "அதிக மதிப்பெண் = அதிக அபாயம்", "అధిక స్కోరు = అధిక ప్రమాదం"),
-    keyConcerns: getStr("Key concerns:", "मुख्य चिंताएं:", "Main concerns:", "મુખ્ય ચિંતાઓ:", "முக்கிய கவலைகள்:", "ముఖ్య ఆందోళనలు:")
+    heroQuestion: getStr("How Risky is This Contract?", "यह अनुबंध कितना जोखिम भरा है?", "Yeh contract kitna risky hai?", "આ કરાર કેટલો જોખમી છે?", "இந்த ஒப்பந்தம் எவ்வளவு ஆபத்தானது?", "ఈ ఒప్పందం ఎంత ప్రమాదకరం?", "हा करार किती धोकादायक आहे?"),
+    scoreSubtext: getStr("Higher score = more risk", "अधिक स्कोर = अधिक जोखिम", "Jitna zyada score, utna zyada risk", "ઉચ્ચ સ્કોર = વધુ જોખમ", "அதிக மதிப்பெண் = அதிக அபாயம்", "అధిక స్కోరు = అధిక ప్రమాదం", "जास्त स्कोर = जास्त जोखीम"),
+    keyConcerns: getStr("Key concerns:", "मुख्य चिंताएं:", "Main concerns:", "મુખ્ય ચિંતાઓ:", "முக்கிய கவலைகள்:", "ముఖ్య ఆందోళనలు:", "मुख्य चिंता:")
   };
 
   const config = {
@@ -36,8 +37,8 @@ export function RiskSummaryBanner({
       iconColor: "text-emerald-600 dark:text-emerald-400",
       textColor: "text-emerald-800 dark:text-emerald-200",
       bulletColor: "bg-emerald-500",
-      label: getStr("LOW RISK", "कम जोखिम", "Low Risk", "ઓછું જોખમ", "குறைந்த அபாயம்", "తక్కువ ప్రమాదం"),
-      message: getStr("This contract appears relatively safe with minor concerns.", "यह अनुबंध मामूली चिंताओं के साथ अपेक्षाकृत सुरक्षित प्रतीत होता है।", "Yeh contract safe lag raha hai, kuch choti dikkaton ke saath.", "આ કરાર નાની ચિંતાઓ સાથે પ્રમાણમાં સુરક્ષિત જણાય છે.", "இந்த ஒப்பந்தம் ஒப்பீட்டளவில் பாதுகாப்பானது.", "ఈ ఒప్పందం సాపేక్షంగా సురక్షితంగా ఉన్నట్లు కనిపిస్తోంది."),
+      label: getStr("LOW RISK", "कम जोखिम", "KAM RISK", "ઓછું જોખમ", "குறைந்த அபாயம்", "తక్కువ ప్రమాదం", "कमी जोखीम"),
+      message: getStr("This contract appears relatively safe with minor concerns.", "यह अनुबंध मामूली चिंताओं के साथ अपेक्षाकृत सुरक्षित प्रतीत होता है।", "Yeh contract kaafi had tak safe lag raha hai, bas kuch chhoti concerns hain.", "આ કરાર નાની ચિંતાઓ સાથે પ્રમાણમાં સુરક્ષિત જણાય છે.", "இந்த ஒப்பந்தம் ஒப்பீட்டளவில் பாதுகாப்பானது.", "ఈ ఒప్పందం సాపేక్షంగా సురక్షితంగా ఉన్నట్లు కనిపిస్తోంది.", "हा करार किरकोळ चिंतांसह तुलनेने सुरक्षित दिसतो."),
     },
     medium: {
       icon: AlertTriangle,
@@ -46,8 +47,8 @@ export function RiskSummaryBanner({
       iconColor: "text-amber-600 dark:text-amber-400",
       textColor: "text-amber-800 dark:text-amber-200",
       bulletColor: "bg-amber-500",
-      label: getStr("MEDIUM RISK", "मध्यम जोखिम", "Medium Risk", "મધ્યમ જોખમ", "மிதமான அபாயம்", "மితమైన ప్రమాదం"),
-      message: getStr("This contract has moderate concerns that should be reviewed.", "इस अनुबंध में मध्यम चिंताएं हैं जिनकी समीक्षा की जानी चाहिए।", "Is contract mein kuch aisi baatein hain jinhe dekhna zaroori hai.", "આ કરારમાં મધ્યમ ચિંતાઓ છે.", "இந்த ஒப்பந்தத்தில் மிதமான கவலைகள் உள்ளன, அவை மதிப்பாய்வு செய்யப்பட வேண்டும்.", "ఈ ఒప్పందంలో కొన్ని మితమైన ఆందోళనలు ఉన్నాయి."),
+      label: getStr("MEDIUM RISK", "मध्यम जोखिम", "MEDIUM RISK", "મધ્યમ જોખમ", "மிதமான அபாயம்", "మితమైన ప్రమాదం", "मध्यम जोखीम"),
+      message: getStr("This contract has moderate concerns that should be reviewed.", "इस अनुबंध में मध्यम चिंताएं हैं जिनकी समीक्षा की जानी चाहिए।", "Is contract mein kuch aisi baatein hain jo dhyaan se review karni chahiye.", "આ કરારમાં મધ્યમ ચિંતાઓ છે.", "இந்த ஒப்பந்தத்தில் மிதமான கவலைகள் உள்ளன, அவை மதிப்பாய்வு செய்யப்பட வேண்டும்.", "ఈ ఒప్పందంలో కొన్ని మితమైన ఆందోళనలు ఉన్నాయి.", "या करारात काही मध्यम चिंता आहेत ज्यांची समीक्षा करायला हवी."),
     },
     high: {
       icon: ShieldAlert,
@@ -56,8 +57,8 @@ export function RiskSummaryBanner({
       iconColor: "text-red-500 dark:text-red-400",
       textColor: "text-red-700 dark:text-red-200",
       bulletColor: "bg-red-500",
-      label: getStr("HIGH RISK", "उच्च जोखिम", "High Risk", "ઉચ્ચ જોખમ", "உயர் அபாயம்", "అధిక ప్రమాదం"),
-      message: getStr("This contract has significant risks that need immediate attention.", "इस अनुबंध में महत्वपूर्ण जोखिम हैं जिन पर तुरंत ध्यान देने की आवश्यकता है।", "Is contract mein bade risks hain jinpe turant dhyaan dena hoga.", "આ કરારમાં નોંધપાત્ર જોખમો છે.", "இந்த ஒப்பந்தத்தில் குறிப்பிடத்தக்க அபாயங்கள் உள்ளன, அவை உடனடியாக கவனிக்கப்பட வேண்டும்.", "ఈ ఒప్పందంలో వెంటనే గమనించాల్సిన ముఖ్యమైన ప్రమాదాలు ఉన్నాయి."),
+      label: getStr("HIGH RISK", "उच्च जोखिम", "HIGH RISK", "ઉચ્ચ જોખમ", "உயர் அபாயம்", "అధిక ప్రమాదం", "उच्च जोखीम"),
+      message: getStr("This contract has significant risks that need immediate attention.", "इस अनुबंध में महत्वपूर्ण जोखिम हैं जिन पर तुरंत ध्यान देने की आवश्यकता है।", "Is contract mein bade risks hain jinpe turant dhyaan dena hoga.", "આ કરારમાં નોંધપાત્ર જોખમો છે.", "இந்த ஒப்பந்தத்தில் குறிப்பிடத்தக்க அபாயங்கள் உள்ளன, அவை உடனடியாக கவனிக்கப்பட வேண்டும்.", "ఈ ఒప్పందంలో వెంటనే గమనించాల్సిన ముఖ్యమైన ప్రమాదాలు ఉన్నాయి.", "या करारात महत्त्वाच्या जोखमी आहेत ज्याकडे त्वरित लक्ष द्यावे लागेल."),
     },
   };
 

@@ -25,41 +25,42 @@ export function ClauseCard({
   delay = 0,
   targetLanguage = "en",
 }: ClauseCardProps) {
-  const getStr = (en: string, hi: string, hinglish: string, gu: string, ta: string, te: string) => {
+  const getStr = (en: string, hi: string, hinglish: string, gu: string, ta: string, te: string, mr: string) => {
     if (targetLanguage === 'hi') return hi;
     if (targetLanguage === 'hinglish') return hinglish;
     if (targetLanguage === 'gu') return gu;
     if (targetLanguage === 'ta') return ta;
     if (targetLanguage === 'te') return te;
+    if (targetLanguage === 'mr') return mr;
     return en;
   };
 
   const t = {
-    whatThisMeans: getStr("What this means:", "इसका क्या मतलब है:", "Iska kya matlab hai:", "આનો અર્થ શું છે:", "இதன் பொருள் என்ன:", "దీని అర్థం ఏమిటి:"),
-    warning: getStr("Warning: Real-world consequence", "चेतावनी: वास्तविक दुनिया का परिणाम", "Warning: Asli duniya mein asar", "ચેતવણી: વાસ્તવિક દુનિયાનું પરિણામ", "எச்சரிக்கை: நிஜ உலக விளைவு", "హెచ్చరిక: వాస్తవ ప్రపంచ పరిణామం"),
-    technical: getStr("Technical:", "तकनीकी:", "Technical:", "તકનીકી:", "தொழில்நுட்பம்:", "సాంకేతిక:"),
-    viewInDoc: getStr("View in Document", "दस्तावेज़ में देखें", "Document mein dekhein", "દસ્તાવેજમાં જુઓ", "ஆவணத்தில் காண்க", "పత్రంలో చూడండి")
+    whatThisMeans: getStr("What this means:", "इसका क्या मतलब है:", "Iska kya matlab hai:", "આનો અર્થ શું છે:", "இதன் பொருள் என்ன:", "దీని అర్థం ఏమిటి:", "याचा अर्थ काय:"),
+    warning: getStr("Warning: Real-world consequence", "चेतावनी: वास्तविक दुनिया का परिणाम", "Warning: Asli duniya mein asar", "ચેતવણી: વાસ્તવિક દુનિયાનું પરિણામ", "எச்சரிக்கை: நிஜ உலக விளைவு", "హెచ్చరిక: వాస్తవ ప్రపంచ పరిణామం", "इशारा: प्रत्यक्ष परिणाम"),
+    technical: getStr("Technical:", "तकनीकी:", "Technical:", "તકનીકી:", "தொழில்நுட்பம்:", "సాంకేతిక:", "तांत्रिक:"),
+    viewInDoc: getStr("View in Document", "दस्तावेज़ में देखें", "Document mein dekho", "દસ્તાવેજમાં જુઓ", "ஆவணத்தில் காண்க", "పత్రంలో చూడండి", "दस्तऐवजात पहा")
   };
 
   const severityConfig = {
     critical: {
       border: "border-l-red-500",
       badge: "bg-red-50 text-red-700 border border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20",
-      label: getStr("Critical Risk", "महत्वपूर्ण जोखिम", "Critical Risk", "ગંભીર જોખમ", "முக்கியமான அபாயம்", "క్లిష్టమైన ప్రమాదం"),
+      label: getStr("Critical Risk", "महत्वपूर्ण जोखिम", "Critical Risk", "ગંભીર જોખમ", "முக்கியமான அபாயம்", "క్లిష్టమైన ప్రమాదం", "गंभीर जोखीम"),
       icon: "🔴",
       iconBg: "bg-red-50 dark:bg-red-500/10 shadow-none dark:shadow-[0_0_15px_rgba(239,68,68,0.2)]",
     },
     moderate: {
       border: "border-l-amber-500",
       badge: "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20",
-      label: getStr("Moderate Risk", "मध्यम जोखिम", "Moderate Risk", "મધ્યમ જોખમ", "மிதமான அபாயம்", "మితమైన ప్రమాదం"),
+      label: getStr("Moderate Risk", "मध्यम जोखिम", "Moderate Risk", "મધ્યમ જોખમ", "மிதமான அபாயம்", "మితమైన ప్రమాదం", "मध्यम जोखीम"),
       icon: "🟡",
       iconBg: "bg-amber-50 dark:bg-amber-500/10 shadow-none dark:shadow-[0_0_15px_rgba(245,158,11,0.2)]",
     },
     informational: {
       border: "border-l-blue-500",
       badge: "bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20",
-      label: getStr("Review Recommended", "समीक्षा की सिफारिश की गई", "Review Recommended", "સમીક્ષાની ભલામણ કરવામાં આવે છે", "மதிப்பாய்வு பரிந்துரைக்கப்படுகிறது", "సమీక్ష సిఫార్సు చేయబడింది"),
+      label: getStr("Review Recommended", "समीक्षा की सिफारिश की गई", "Review Karna Recommended Hai", "સમીક્ષાની ભલામણ કરવામાં આવે છે", "மதிப்பாய்வு பரிந்துரைக்கப்படுகிறது", "సమీక్ష సిఫార్సు చేయబడింది", "पुनरावलोकन सुचवले आहे"),
       icon: "🟢",
       iconBg: "bg-blue-50 dark:bg-blue-500/10 shadow-none dark:shadow-[0_0_15px_rgba(59,130,246,0.2)]",
     },

@@ -114,7 +114,7 @@ export function DashboardHeader({
                 isPlaying
                   ? "border-violet-500/50 bg-violet-50 text-violet-700 dark:border-violet-500/30 dark:bg-violet-500/10 dark:text-violet-300"
                   : "border-border bg-white text-foreground dark:border-white/5 dark:bg-[#171C2E] dark:text-slate-300 dark:hover:bg-[#1E253A]"
-              } disabled:opacity-50 disabled:cursor-wait`}
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
               style={{ fontWeight: 600 }}
               title={
                 isListenDisabled
@@ -187,6 +187,12 @@ export function DashboardHeader({
                     className="cursor-pointer rounded px-3 py-2 outline-none hover:bg-gray-100 focus:bg-gray-100 data-[highlighted]:bg-gray-100 dark:hover:bg-white/10 dark:focus:bg-white/10 dark:data-[highlighted]:bg-white/10"
                   >
                     <Select.ItemText>తెలుగు (Telugu)</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item
+                    value="mr"
+                    className="cursor-pointer rounded px-3 py-2 outline-none hover:bg-gray-100 focus:bg-gray-100 data-[highlighted]:bg-gray-100 dark:hover:bg-white/10 dark:focus:bg-white/10 dark:data-[highlighted]:bg-white/10"
+                  >
+                    <Select.ItemText>मराठी (Marathi)</Select.ItemText>
                   </Select.Item>
                 </Select.Viewport>
               </Select.Content>

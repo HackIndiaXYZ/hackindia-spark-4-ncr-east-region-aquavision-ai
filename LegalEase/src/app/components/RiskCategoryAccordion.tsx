@@ -70,7 +70,7 @@ export function RiskCategoryAccordion({
                   </span>
                   {category.isHighPriority && (
                     <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs text-red-600 border border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20" style={{ fontWeight: 600 }}>
-                      {targetLanguage === "hi" ? "प्राथमिकता" : "Priority"}
+                      {targetLanguage === "hi" ? "प्राथमिकता" : targetLanguage === "mr" ? "प्राधान्य" : "Priority"}
                     </span>
                   )}
                 </div>

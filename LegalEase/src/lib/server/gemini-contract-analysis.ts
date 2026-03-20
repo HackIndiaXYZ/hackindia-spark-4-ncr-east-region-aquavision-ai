@@ -189,7 +189,7 @@ Do not wrap the JSON in markdown.
 
 Language & Tone Rules:
   - **[CRITICAL PRIVACY RULE]: Do NOT output the real names of any individuals, companies, locations, or projects in the summary or anywhere else. Replace them all with generic placeholders like [Builder], [Buyer], [Company], or [Project]. Even if you see a name, you MUST anonymize it!**
-  - summary: Provide a highly detailed, comprehensive plain-English summary (at least 3-4 paragraphs). Break it down into what the contract is, the main obligations, the payment terms, and the key "catches" or hidden terms. Elaborate extensively without using legal jargon. MUST BE A SINGLE CONTINUOUS STRING using \\n\\n for paragraph breaks.
+  - summary: Write a concise plain-English summary in 4-6 sentences MAX. Cover what the contract is, the key obligations, and the most important hidden risks. Keep it short. No legal jargon. MUST BE A SINGLE CONTINUOUS STRING.
   - title: Replace complex legal titles with simple sentences. (e.g., Instead of "Asymmetric Liability", use "You might have to pay for everything").
 - description: Use very simple, everyday language. Avoid ALL legal jargon. Keep it short and clear, explain like talking to a normal person.
 - consequence: Clear real-world consequence. What could go wrong? (e.g., "You might end up paying extra money unexpectedly.")

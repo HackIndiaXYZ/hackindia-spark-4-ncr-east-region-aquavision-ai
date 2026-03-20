@@ -70,29 +70,30 @@ export function RiskAnalysisPanel({
     return null;
   }
 
-  const getStr = (en: string, hi: string, hinglish: string, gu: string, ta: string, te: string) => {
+  const getStr = (en: string, hi: string, hinglish: string, gu: string, ta: string, te: string, mr: string) => {
     if (targetLanguage === 'hi') return hi;
     if (targetLanguage === 'hinglish') return hinglish;
     if (targetLanguage === 'gu') return gu;
     if (targetLanguage === 'ta') return ta;
     if (targetLanguage === 'te') return te;
+    if (targetLanguage === 'mr') return mr;
     return en;
   };
 
   const t = {
-    liveAnalysis: getStr("🟢 Live AI Analysis", "🟢 लाइव AI विश्लेषण", "🟢 Live AI Analysis", "🟢 લાઇવ AI વિશ્લેષણ", "🟢 நேரடி AI பகுப்பாய்வு", "🟢 లైవ్ AI విశ్లేషణ"),
-    demoMode: getStr("🟡 Demo Mode (Hackathon Preview)", "🟡 डेमो मोड (हैकथॉन प्रीव्यू)", "🟡 Demo Mode (Hackathon Preview)", "🟡 ડેમો મોડ (હેકાથોન પ્રિવ્યૂ)", "🟡 டெமோ பயன்முறை (ஹக்கத்தான் முன்னோட்டம்)", "🟡 డెమో మోడ్ (హాకథాన్ ప్రివ్యూ)"),
-    confidence: getStr("Confidence Score", "विश्वास स्कोर", "Confidence Score", "વિશ્વાસ સ્કોર", "நம்பிக்கை மதிப்பெண்", "విశ్వాస స్కోరు"),
-    risksFound: getStr("Risks Found", "पाए गए जोखिम", "Risks Found", "જોખમો મળ્યા", "கண்டறியப்பட்ட அபாயங்கள்", "ప్రమాదాలు కనుగొనబడ్డాయి"),
-    high: getStr("high", "उच्च", "high", "ઉચ્ચ", "உயர்", "అధిక"),
-    whatGoesWrong: getStr("⚠️ What could go wrong?", "⚠️ क्या गलत हो सकता है?", "⚠️ Kya galat ho sakta hai?", "⚠️ શું ખોટું થઈ શકે છે?", "⚠️ என்ன தவறாக நடக்கலாம்?", "⚠️ ఏమి తప్పు జరగవచ్చు?"),
-    summaryLabel: getStr("Summary", "सारांश (SUMMARY)", "Summary", "સારાંશ (SUMMARY)", "சுருக்கம் (SUMMARY)", "సారాంశం (SUMMARY)"),
-    simplifiedNote: getStr("We’ve simplified this so you can understand it easily.", "हमने आपके समझने के लिए इसे आसान कर दिया है।", "Aapke samajhne ke liye isko aasan banaya gaya hai.", "અમે આને સરળ બનાવ્યું છે જેથી તમે સમજી શકો.", "நீங்கள் எளிதாக புரிந்து கொள்ள முடியும் என்பதற்காக இதை எளிதாக்கியுள்ளோம்.", "మీరు సులభంగా అర్థం చేసుకోవడానికి మేము దీన్ని సరళీకృతం చేసాము."),
-    riskBreakdown: getStr("Risk Breakdown", "जोखिम का विवरण", "Risk Breakdown", "જોખમનું વિભાજન", "அபாய விவரம்", "ప్రమాదాల విచ్ఛిన్నం"),
-    priorityNote: getStr("High priority items are expanded", "उच्च प्राथमिकता वाले आइटम विस्तारित हैं", "High priority items expanded hain", "ઉચ્ચ પ્રાથમિકતાવાળી આઇટમ્સ વિસ્તૃત કરવામાં આવી છે", "முன்னுரிமை உருப்படிகள் விரிவாக்கப்பட்டுள்ளன", "అధిక ప్రాధాన్యత ఉన్నవి విస్తరించబడ్డాయి"),
-    catHigh: getStr("High Risk Issues", "उच्च जोखिम वाली समस्याएं", "High Risk Issues", "ઉચ્ચ જોખમી સમસ્યાઓ", "உயர் அபாய சிக்கல்கள்", "అధిక ప్రమాద సమస్యలు"),
-    catMedium: getStr("Moderate Risk Issues", "मध्यम जोखिम वाली समस्याएं", "Moderate Risk Issues", "મધ્યમ જોખમી સમસ્યાઓ", "மிதமான அபாய சிக்கல்கள்", "మితమైన ప్రమాద సమస్యలు"),
-    catLow: getStr("Review Recommended", "समीक्षा की सिफारिश की गई", "Review Recommended", "સમીક્ષાની ભલામણ કરવામાં આવે છે", "மதிப்பாய்வு பரிந்துரைக்கப்படுகிறது", "సమీక్ష సిఫార్సు చేయబడింది"),
+    liveAnalysis: getStr("🟢 Live AI Analysis", "🟢 लाइव AI विश्लेषण", "🟢 Live AI Analysis", "🟢 લાઇવ AI વિશ્લેષણ", "🟢 நேரடி AI பகுப்பாய்வு", "🟢 లైవ్ AI విశ్లేషణ", "🟢 थेट AI विश्लेषण"),
+    demoMode: getStr("🟡 Demo Mode (Hackathon Preview)", "🟡 डेमो मोड (हैकथॉन प्रीव्यू)", "🟡 Demo Mode (Hackathon Preview)", "🟡 ડેમો મોડ (હેકાથોન પ્રિવ્યૂ)", "🟡 டெமோ பயன்முறை (ஹக்கத்தான் முன்னோட்டம்)", "🟡 డెమో మోడ్ (హాకథాన్ ప్రివ్యూ)", "🟡 डेमो मोड (हॅकथॉन प्रिव्ह्यू)"),
+    confidence: getStr("Confidence Score", "विश्वास स्कोर", "Confidence Score", "વિશ્વાસ સ્કોર", "நம்பிக்கை மதிப்பெண்", "విశ్వాస స్కోరు", "विश्वास स्कोर"),
+    risksFound: getStr("Risks Found", "पाए गए जोखिम", "Risks Mile", "જોખમો મળ્યા", "கண்டறியப்பட்ட அபாயங்கள்", "ప్రమాదాలు కనుగొనబడ్డాయి", "सापडलेल्या जोखीमा"),
+    high: getStr("high", "उच्च", "high", "ઉચ્ચ", "உயர்", "అధిక", "उच्च"),
+    whatGoesWrong: getStr("⚠️ What could go wrong?", "⚠️ क्या गलत हो सकता है?", "⚠️ Kya galat ho sakta hai?", "⚠️ શું ખોટું થઈ શકે છે?", "⚠️ என்ன தவறாக நடக்கலாம்?", "⚠️ ఏమి తప్పు జరగవచ్చు?", "⚠️ काय चुकीचे होऊ शकते?"),
+    summaryLabel: getStr("Summary", "सारांश (SUMMARY)", "Summary", "સારાંશ (SUMMARY)", "சுருக்கம் (SUMMARY)", "సారాంశం (SUMMARY)", "सारांश (SUMMARY)"),
+    simplifiedNote: getStr("We’ve simplified this so you can understand it easily.", "हमने आपके समझने के लिए इसे आसान कर दिया है।", "Isko aasan language mein samjhaya gaya hai.", "અમે આને સરળ બનાવ્યું છે જેથી તમે સમજી શકો.", "நீங்கள் எளிதாக புரிந்து கொள்ள முடியும் என்பதற்காக இதை எளிதாக்கியுள்ளோம்.", "మీరు సులభంగా అర్థం చేసుకోవడానికి మేము దీన్ని సరళీకృతం చేసాము.", "समजायला सोपे व्हावे म्हणून हे सोप्या भाषेत दिले आहे."),
+    riskBreakdown: getStr("Risk Breakdown", "जोखिम का विवरण", "Risk Breakdown", "જોખમનું વિભાજન", "அபாய விவரம்", "ప్రమాదాల విచ్ఛిన్నం", "जोखीम तपशील"),
+    priorityNote: getStr("High priority items are expanded", "उच्च प्राथमिकता वाले आइटम विस्तारित हैं", "High priority items khule hue hain", "ઉચ્ચ પ્રાથમિકતાવાળી આઇટમ્સ વિસ્તૃત કરવામાં આવી છે", "முன்னுரிமை உருப்படிகள் விரிவாக்கப்பட்டுள்ளன", "అధిక ప్రాధాన్యత ఉన్నవి విస్తరించబడ్డాయి", "उच्च प्राधान्याच्या बाबी उघड्या आहेत"),
+    catHigh: getStr("High Risk Issues", "उच्च जोखिम वाली समस्याएं", "High Risk Wale Issues", "ઉચ્ચ જોખમી સમસ્યાઓ", "உயர் அபாய சிக்கல்கள்", "అధిక ప్రమాద సమస్యలు", "उच्च जोखीम समस्या"),
+    catMedium: getStr("Moderate Risk Issues", "मध्यम जोखिम वाली समस्याएं", "Moderate Risk Wale Issues", "મધ્યમ જોખમી સમસ્યાઓ", "மிதமான அபாய சிக்கல்கள்", "మితమైన ప్రమాద సమస్యలు", "मध्यम जोखीम समस्या"),
+    catLow: getStr("Review Recommended", "समीक्षा की सिफारिश की गई", "Review Karna Recommended Hai", "સમીક્ષાની ભલામણ કરવામાં આવે છે", "மதிப்பாய்வு பரிந்துரைக்கப்படுகிறது", "సమీక్ష సిఫార్సు చేయబడింది", "पुनरावलोकन सुचवले आहे"),
   };
 
   const riskLevel = scoreToRiskLevel(analysis.riskScore);

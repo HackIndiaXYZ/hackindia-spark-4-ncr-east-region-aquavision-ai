@@ -160,7 +160,7 @@ export default function App() {
 
   const handleUpload = async (file: File) => {
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
-      setError("Please upload a PDF file for the demo.");
+      setError("Please upload a PDF file.");
       return;
     }
 
@@ -211,7 +211,7 @@ export default function App() {
     try {
       const result = await translateDocument(
         originalAnalysis,
-        lang as "en" | "hi" | "hinglish" | "gu" | "ta" | "te"
+        lang as any
       );
       setAnalysis(result.data as AnalysisResult);
       setTranslationsCache((prev) => ({ ...prev, [lang]: result.data as AnalysisResult }));
