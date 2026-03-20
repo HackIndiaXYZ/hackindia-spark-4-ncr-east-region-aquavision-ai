@@ -1,54 +1,49 @@
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const steps = [
-  { id: 1, label: "Reading document...", duration: 800 },
-  { id: 2, label: "Analyzing clauses...", duration: 1200 },
-  { id: 3, label: "Detecting risks...", duration: 1000 },
-  { id: 4, label: "Generating report...", duration: 800 },
+const defaultSteps = [
+  "Uploading PDF...",
+  "Extracting text...",
+  "Analyzing clauses...",
+  "Calculating risk score...",
+  "Preparing dashboard...",
 ];
 
 interface AnalysisLoadingStateProps {
-  onComplete: () => void;
+  steps?: string[];
 }
 
-export function AnalysisLoadingState({ onComplete }: AnalysisLoadingStateProps) {
+export function AnalysisLoadingState({
+  steps = defaultSteps,
+}: AnalysisLoadingStateProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    let progressInterval: NodeJS.Timeout;
-
-    if (currentStep < steps.length) {
-      const step = steps[currentStep];
-      const stepProgress = (currentStep / steps.length) * 100;
-      
-      // Animate progress within the step
-      progressInterval = setInterval(() => {
-        setProgress((prev) => {
-          const target = ((currentStep + 1) / steps.length) * 100;
-          const increment = (target - stepProgress) / 20;
-          return Math.min(prev + increment, target);
-        });
-      }, step.duration / 20);
-
-      timeout = setTimeout(() => {
-        clearInterval(progressInterval);
-        if (currentStep === steps.length - 1) {
-          setProgress(100);
-          setTimeout(onComplete, 300);
-        } else {
-          setCurrentStep(currentStep + 1);
-        }
-      }, step.duration);
+    if (steps.length === 0) {
+      return;
     }
 
+    setCurrentStep(0);
+    setProgress(10);
+
+    const interval = setInterval(() => {
+      setCurrentStep((previousStep) => {
+        const nextStep =
+          previousStep < steps.length - 1 ? previousStep + 1 : previousStep;
+        const nextProgress = Math.min(
+          25 + (nextStep / Math.max(steps.length - 1, 1)) * 70,
+          95,
+        );
+        setProgress(nextProgress);
+        return nextStep;
+      });
+    }, 900);
+
     return () => {
-      clearTimeout(timeout);
-      clearInterval(progressInterval);
+      clearInterval(interval);
     };
-  }, [currentStep, onComplete]);
+  }, [steps]);
 
   return (
     <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-violet-50 p-8">
@@ -92,7 +87,7 @@ export function AnalysisLoadingState({ onComplete }: AnalysisLoadingStateProps) 
           <div className="space-y-2">
             {steps.map((step, index) => (
               <div
-                key={step.id}
+                key={step}
                 className={`flex items-center gap-2 text-sm transition-all ${
                   index === currentStep
                     ? "text-[#4f46e5] scale-105"
@@ -107,13 +102,13 @@ export function AnalysisLoadingState({ onComplete }: AnalysisLoadingStateProps) 
                 <div
                   className={`h-2 w-2 rounded-full ${
                     index === currentStep
-                      ? "bg-[#4f46e5] animate-pulse"
-                      : index < currentStep
-                      ? "bg-green-500"
-                      : "bg-gray-300"
+                    ? "bg-[#4f46e5] animate-pulse"
+                    : index < currentStep
+                    ? "bg-green-500"
+                    : "bg-gray-300"
                   }`}
                 />
-                {step.label}
+                {step}
               </div>
             ))}
           </div>

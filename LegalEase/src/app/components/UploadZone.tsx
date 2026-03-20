@@ -1,15 +1,34 @@
 import { CloudUpload } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 interface UploadZoneProps {
-  onUpload: () => void;
+  onUpload: (file: File) => void;
 }
 
 export function UploadZone({ onUpload }: UploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFiles = (files: FileList | null) => {
+    const file = files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    onUpload(file);
+  };
 
   return (
     <div className="flex h-full w-full items-center justify-center p-4 md:p-8">
+      <input
+        ref={inputRef}
+        type="file"
+        accept="application/pdf"
+        className="hidden"
+        onChange={(event) => handleFiles(event.target.files)}
+      />
+
       <div
         className={`flex w-full max-w-lg flex-col items-center gap-6 rounded-xl border-2 border-dashed p-8 transition-all md:gap-8 md:p-12 ${
           isDragging
@@ -24,7 +43,7 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
         onDrop={(e) => {
           e.preventDefault();
           setIsDragging(false);
-          onUpload();
+          handleFiles(e.dataTransfer.files);
         }}
       >
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100 md:h-20 md:w-20">
@@ -41,7 +60,7 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
         </div>
 
         <button
-          onClick={onUpload}
+          onClick={() => inputRef.current?.click()}
           className="rounded-lg border border-border bg-white px-6 py-2.5 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
           style={{ fontWeight: 500 }}
         >

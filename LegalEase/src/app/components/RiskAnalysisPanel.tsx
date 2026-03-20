@@ -1,161 +1,179 @@
-import { RiskSummaryBanner } from "./RiskSummaryBanner";
-import { RiskIndicatorBar } from "./RiskIndicatorBar";
+import type { AnalysisResult, RiskCard, RiskLevel } from "@/types/analysis";
+
 import { RiskCategoryAccordion } from "./RiskCategoryAccordion";
+import { RiskIndicatorBar } from "./RiskIndicatorBar";
+import { RiskSummaryBanner } from "./RiskSummaryBanner";
 
 interface RiskAnalysisPanelProps {
+  analysis: AnalysisResult | null;
+  analysisMode: "demo" | "live" | null;
   onViewInDocument: (clauseId: string) => void;
   showAnimations?: boolean;
 }
 
-export function RiskAnalysisPanel({ onViewInDocument, showAnimations = false }: RiskAnalysisPanelProps) {
-  const riskScore = 72;
-  const riskLevel = riskScore > 66 ? "high" : riskScore > 33 ? "medium" : "low";
+type ClauseSeverity = "critical" | "moderate" | "informational";
 
-  const riskCategories = [
-    {
-      id: "liability",
-      title: "Liability & Indemnification",
-      isHighPriority: true,
-      clauses: [
-        {
-          id: "liability-1",
-          title: "Asymmetric Liability Terms",
-          description:
-            "You could be on the hook for unlimited damages, but the provider caps their liability at just 6 months of fees. This creates an unfair imbalance of risk.",
-          technicalDetails:
-            "Provider's liability limited to 6 months of payments while client liability is unlimited per Section 6.1",
-          severity: "critical" as const,
-        },
-        {
-          id: "indemnify-1",
-          title: "One-Sided Indemnification",
-          description:
-            "You must protect the provider from any legal claims, but they don't offer you the same protection. If something goes wrong, you're covering the costs alone.",
-          technicalDetails:
-            "Client indemnifies provider for all third-party claims without reciprocal protection per Section 6.3",
-          severity: "critical" as const,
-        },
-      ],
-    },
-    {
-      id: "termination",
-      title: "Termination & Exit Terms",
-      isHighPriority: true,
-      clauses: [
-        {
-          id: "term-1",
-          title: "Short Termination Notice Period",
-          description:
-            "You only get 30 days to wrap things up if you cancel. For complex projects, this might not be enough time for a smooth handover.",
-          technicalDetails:
-            "30-day termination notice per Section 2.3 may be insufficient for project transitions",
-          severity: "moderate" as const,
-        },
-        {
-          id: "term-2",
-          title: "Early Termination Penalties",
-          description:
-            "If you need to end the contract early, you'll pay 3 months of fees as a penalty. This could trap you in a bad arrangement.",
-          technicalDetails:
-            "Liquidated damages equal to 3 months fees for early termination without cause per Section 2.4",
-          severity: "moderate" as const,
-        },
-      ],
-    },
-    {
-      id: "payment",
-      title: "Payment Terms",
-      clauses: [
-        {
-          id: "payment-1",
-          title: "High Late Payment Interest",
-          description:
-            "Late payments cost you 2% per month (24% per year). This is higher than typical contracts and can add up quickly if you're ever delayed.",
-          technicalDetails:
-            "2% monthly interest rate (24% APR) exceeds typical market rates per Section 3.2",
-          severity: "moderate" as const,
-        },
-        {
-          id: "payment-2",
-          title: "Automatic Price Increases",
-          description:
-            "Prices go up automatically every year with no limit and no chance to negotiate. You might be stuck with unexpected cost increases.",
-          technicalDetails:
-            "Annual price escalation clause without cap or negotiation per Section 3.3",
-          severity: "informational" as const,
-        },
-      ],
-    },
-    {
-      id: "ip",
-      title: "Intellectual Property",
-      clauses: [
-        {
-          id: "ip-1",
-          title: "Unclear Ownership Rights",
-          description:
-            "The contract doesn't clearly define what 'pre-existing materials' means. This could lead to fights later about who owns what was created.",
-          technicalDetails:
-            "Ambiguous definition of pre-existing materials in Section 4.1 could create ownership disputes",
-          severity: "moderate" as const,
-        },
-      ],
-    },
-  ];
+const severityByLevel: Record<RiskLevel, ClauseSeverity> = {
+  high: "critical",
+  medium: "moderate",
+  low: "informational",
+};
 
-  const totalClauses = riskCategories.reduce(
-    (sum, cat) => sum + cat.clauses.length,
-    0
-  );
+const categoryConfig = [
+  {
+    id: "high",
+    title: "High Risk Issues",
+    level: "high" as const,
+    isHighPriority: true,
+  },
+  {
+    id: "medium",
+    title: "Moderate Risk Issues",
+    level: "medium" as const,
+    isHighPriority: false,
+  },
+  {
+    id: "low",
+    title: "Review Recommended",
+    level: "low" as const,
+    isHighPriority: false,
+  },
+];
 
-  const primaryIssues = [
-    "Asymmetric liability terms",
-    "One-sided indemnification",
-  ];
+function scoreToRiskLevel(score: number): RiskLevel {
+  if (score > 66) {
+    return "high";
+  }
+
+  if (score > 33) {
+    return "medium";
+  }
+
+  return "low";
+}
+
+function getPrimaryIssues(risks: RiskCard[]) {
+  return risks.slice(0, 2).map((risk) => risk.title);
+}
+
+export function RiskAnalysisPanel({
+  analysis,
+  analysisMode,
+  onViewInDocument,
+  showAnimations = false,
+}: RiskAnalysisPanelProps) {
+  if (!analysis) {
+    return null;
+  }
+
+  const riskLevel = scoreToRiskLevel(analysis.riskScore);
+  const riskCategories = categoryConfig
+    .map((category) => ({
+      id: category.id,
+      title: category.title,
+      isHighPriority: category.isHighPriority,
+      clauses: analysis.risks
+        .filter((risk) => risk.level === category.level)
+        .map((risk) => ({
+          id: risk.id,
+          title: risk.title,
+          description: risk.description,
+          consequence: risk.consequence,
+          severity: severityByLevel[risk.level],
+        })),
+    }))
+    .filter((category) => category.clauses.length > 0);
+
+  const totalRisks = analysis.risks.length;
+  const highRiskCount = analysis.risks.filter((risk) => risk.level === "high").length;
+  const primaryIssues = getPrimaryIssues(analysis.risks);
 
   return (
-    // Single scrolling container for entire panel
     <div className="custom-scrollbar h-full overflow-y-auto bg-gray-50">
-      {/* All content scrolls together as one unit */}
       <div className="min-h-full">
-        {/* Risk Summary Banner */}
         <div className="border-b border-border">
           <RiskSummaryBanner
             riskLevel={riskLevel}
-            riskScore={riskScore}
+            riskScore={analysis.riskScore}
             primaryIssues={primaryIssues}
           />
         </div>
 
-        {/* Risk Score Section */}
+        {analysisMode && (
+          <div className="border-b border-border bg-white px-4 py-3 md:px-6">
+            <div className="flex flex-wrap items-center gap-2">
+              <span
+                className={`rounded-full px-2.5 py-1 text-xs ${
+                  analysisMode === "live"
+                    ? "bg-emerald-100 text-emerald-700"
+                    : "bg-amber-100 text-amber-800"
+                }`}
+                style={{ fontWeight: 600 }}
+              >
+                {analysisMode === "live"
+                  ? "Live Analysis"
+                  : "Demo Mode (Fallback)"}
+              </span>
+              {analysisMode === "demo" && (
+                <span className="text-xs text-muted-foreground">
+                  Showing demo results due to temporary issue
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="border-b border-border bg-white p-4 md:p-6">
-          <RiskIndicatorBar score={riskScore} animate={showAnimations} />
+          <RiskIndicatorBar score={analysis.riskScore} animate={showAnimations} />
         </div>
 
-        {/* Quick Stats */}
         <div className="border-b border-border bg-white px-4 py-3 md:px-6 md:py-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-xs text-muted-foreground">Clauses Reviewed</div>
+              <div className="text-xs text-muted-foreground">Confidence Score</div>
               <div className="text-2xl" style={{ fontWeight: 700 }}>
-                45
+                {analysis.confidenceScore}%
               </div>
             </div>
             <div>
-              <div className="text-xs text-muted-foreground">Issues Found</div>
+              <div className="text-xs text-muted-foreground">Risks Found</div>
               <div className="flex items-baseline gap-2">
                 <div className="text-2xl text-red-600" style={{ fontWeight: 700 }}>
-                  {totalClauses}
+                  {totalRisks}
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  ({riskCategories.filter(c => c.isHighPriority).length} priority)
-                </div>
+                <div className="text-sm text-muted-foreground">({highRiskCount} high)</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Risk Breakdown - now part of the same scroll */}
+        <div className="border-b border-border bg-white px-4 py-4 md:px-6">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-base md:text-lg" style={{ fontWeight: 600 }}>
+              Real-World Consequences
+            </h3>
+          </div>
+          <div className="space-y-2">
+            {analysis.consequences.map((consequence) => (
+              <div
+                key={consequence}
+                className="rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-sm text-amber-950"
+              >
+                {consequence}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-b border-border bg-white px-4 py-4 md:px-6">
+          <div className="space-y-2">
+            <div className="text-xs uppercase tracking-[0.08em] text-muted-foreground">
+              Summary
+            </div>
+            <p className="text-sm leading-relaxed text-foreground">{analysis.summary}</p>
+          </div>
+        </div>
+
         <div className="p-4 md:p-6">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-base md:text-lg" style={{ fontWeight: 600 }}>

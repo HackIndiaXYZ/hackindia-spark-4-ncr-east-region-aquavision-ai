@@ -6,6 +6,7 @@ interface Clause {
   id: string;
   title: string;
   description: string;
+  consequence?: string;
   technicalDetails?: string;
   severity: "critical" | "moderate" | "informational";
 }

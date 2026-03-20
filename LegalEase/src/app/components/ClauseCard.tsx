@@ -4,6 +4,7 @@ interface ClauseCardProps {
   id: string;
   title: string;
   description: string;
+  consequence?: string;
   technicalDetails?: string;
   severity: "critical" | "moderate" | "informational";
   onViewInDocument: (id: string) => void;
@@ -14,6 +15,7 @@ export function ClauseCard({
   id,
   title,
   description,
+  consequence,
   technicalDetails,
   severity,
   onViewInDocument,
@@ -47,6 +49,7 @@ export function ClauseCard({
 
   return (
     <div
+      id={`risk-${id}`}
       className={`rounded-lg border-l-4 bg-white p-4 shadow-sm transition-all hover:shadow-md ${config.border}`}
       style={{
         animation: `slideInRight 0.4s ease-out ${delay}ms both`,
@@ -80,6 +83,13 @@ export function ClauseCard({
         </div>
         <p className="text-sm leading-relaxed">{description}</p>
       </div>
+
+      {consequence && (
+        <div className="mb-3 rounded-md border border-amber-100 bg-amber-50 p-3 text-sm text-amber-950">
+          <span style={{ fontWeight: 600 }}>Real-world impact:</span>{" "}
+          {consequence}
+        </div>
+      )}
 
       {/* Technical details SECOND (if provided) */}
       {technicalDetails && (

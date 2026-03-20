@@ -1,36 +1,71 @@
 import { useState } from "react";
+
+import { analyzeDocument } from "@/lib/analyze-document";
+import type { AnalysisResult } from "@/types/analysis";
+
+import { AnalysisLoadingState } from "./components/AnalysisLoadingState";
 import { DashboardHeader } from "./components/DashboardHeader";
 import { MobileTabSwitcher } from "./components/MobileTabSwitcher";
-import { UploadZone } from "./components/UploadZone";
 import { PDFViewer } from "./components/PDFViewer";
 import { RiskAnalysisPanel } from "./components/RiskAnalysisPanel";
-import { AnalysisLoadingState } from "./components/AnalysisLoadingState";
+import { UploadZone } from "./components/UploadZone";
+
+const loadingSteps = [
+  "Uploading PDF...",
+  "Extracting text...",
+  "Analyzing clauses...",
+  "Calculating risk score...",
+  "Preparing dashboard...",
+];
 
 export default function App() {
-  const [hasDocument, setHasDocument] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [analysisMode, setAnalysisMode] = useState<"demo" | "live" | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showResults, setShowResults] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"document" | "analysis">("document");
   const [activeHighlight, setActiveHighlight] = useState<string | undefined>();
 
-  const handleUpload = () => {
-    setHasDocument(true);
-    setIsAnalyzing(true);
-  };
+  const hasDocument = selectedFile !== null;
+  const showResults = analysis !== null;
 
-  const handleAnalysisComplete = () => {
-    setIsAnalyzing(false);
-    setShowResults(true);
+  const handleUpload = async (file: File) => {
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+      setError("Please upload a PDF file for the demo.");
+      return;
+    }
+
+    setSelectedFile(file);
+    setAnalysis(null);
+    setAnalysisMode(null);
+    setError(null);
+    setActiveHighlight(undefined);
+    setActiveTab("document");
+    setIsAnalyzing(true);
+
+    try {
+      const result = await analyzeDocument(file);
+      setAnalysis(result.data);
+      setAnalysisMode(result.mode);
+    } catch (analysisError) {
+      setError(
+        analysisError instanceof Error
+          ? analysisError.message
+          : "Analysis failed. Please try again.",
+      );
+      setSelectedFile(null);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const handleViewInDocument = (clauseId: string) => {
     setActiveHighlight(clauseId);
     setActiveTab("document");
 
-    // Scroll to top to ensure visibility
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    // Clear highlight after animation
     setTimeout(() => {
       setActiveHighlight(undefined);
     }, 2500);
@@ -38,7 +73,7 @@ export default function App() {
 
   const handleHighlightClick = (clauseId: string) => {
     setActiveTab("analysis");
-    // Small delay to allow tab switch animation
+
     setTimeout(() => {
       const element = document.getElementById(`risk-${clauseId}`);
       element?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -82,36 +117,44 @@ export default function App() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      {/* Fixed Header */}
-      <DashboardHeader filename={hasDocument ? "service-agreement.pdf" : undefined} />
+      <DashboardHeader
+        filename={
+          hasDocument ? analysis?.documentName || selectedFile?.name : undefined
+        }
+      />
 
-      {/* Mobile Tab Switcher - only visible on mobile when results are shown */}
       {showResults && (
-        <div className="flex-shrink-0 mt-14 md:mt-16">
+        <div className="mt-14 flex-shrink-0 md:mt-16">
           <MobileTabSwitcher activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       )}
 
-      {/* Main Content Area - proper height calculation */}
-      <div className="flex flex-1 overflow-hidden" style={{ marginTop: showResults ? '0' : '3.5rem' }}>
-        {/* Loading State */}
+      <div
+        className="flex flex-1 overflow-hidden"
+        style={{ marginTop: showResults ? "0" : "3.5rem" }}
+      >
         {isAnalyzing && (
           <div className="h-full w-full">
-            <AnalysisLoadingState onComplete={handleAnalysisComplete} />
+            <AnalysisLoadingState steps={loadingSteps} />
           </div>
         )}
 
-        {/* Upload State */}
         {!hasDocument && !isAnalyzing && (
-          <div className="h-full w-full">
-            <UploadZone onUpload={handleUpload} />
+          <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-4 md:p-8">
+            <div className="h-full w-full">
+              <UploadZone onUpload={handleUpload} />
+            </div>
+
+            {error && (
+              <div className="w-full max-w-lg rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900 shadow-sm">
+                {error}
+              </div>
+            )}
           </div>
         )}
 
-        {/* Results - Desktop Layout: Side-by-side columns */}
         {showResults && !isAnalyzing && (
           <div className="hidden h-full w-full md:flex">
-            {/* Left Panel - PDF Viewer (55%) - single scroll container */}
             <div className="h-full w-[55%] border-r border-border">
               <PDFViewer
                 highlights={highlights}
@@ -120,20 +163,19 @@ export default function App() {
               />
             </div>
 
-            {/* Right Panel - Risk Analysis (45%) - independent scroll */}
             <div className="h-full w-[45%]">
               <RiskAnalysisPanel
+                analysis={analysis}
+                analysisMode={analysisMode}
                 onViewInDocument={handleViewInDocument}
-                showAnimations={true}
+                showAnimations
               />
             </div>
           </div>
         )}
 
-        {/* Results - Tablet Layout: Stacked vertically */}
         {showResults && !isAnalyzing && (
           <div className="hidden h-full w-full flex-col sm:flex md:hidden">
-            {/* PDF Viewer on top */}
             <div className="h-1/2 border-b border-border">
               <PDFViewer
                 highlights={highlights}
@@ -142,17 +184,17 @@ export default function App() {
               />
             </div>
 
-            {/* Risk Analysis below */}
             <div className="h-1/2">
               <RiskAnalysisPanel
+                analysis={analysis}
+                analysisMode={analysisMode}
                 onViewInDocument={handleViewInDocument}
-                showAnimations={true}
+                showAnimations
               />
             </div>
           </div>
         )}
 
-        {/* Results - Mobile Layout: Tab-based switching */}
         {showResults && !isAnalyzing && (
           <div className="h-full w-full sm:hidden">
             {activeTab === "document" ? (
@@ -166,8 +208,10 @@ export default function App() {
             ) : (
               <div className="h-full">
                 <RiskAnalysisPanel
+                  analysis={analysis}
+                  analysisMode={analysisMode}
                   onViewInDocument={handleViewInDocument}
-                  showAnimations={true}
+                  showAnimations
                 />
               </div>
             )}
