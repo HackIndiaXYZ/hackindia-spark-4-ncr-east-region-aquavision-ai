@@ -63,7 +63,7 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
 
         <div className="text-center">
           <h3 className="mb-2 text-lg md:text-xl" style={{ fontWeight: 700 }}>
-            Drop your contract here
+            Upload Your Contract
           </h3>
           <p className="text-muted-foreground">
             Supports PDF, DOCX, up to 50MB
@@ -76,7 +76,7 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
             className="rounded-lg border border-border bg-white px-6 py-2.5 transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
             style={{ fontWeight: 500 }}
           >
-            Browse Files
+            Upload Your Contract
           </button>
           
           <button
@@ -84,7 +84,7 @@ export function UploadZone({ onUpload }: UploadZoneProps) {
             className="rounded-lg border border-indigo-200 bg-indigo-50 px-6 py-2.5 text-[#4f46e5] transition-colors hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-[#4f46e5] focus:ring-offset-2"
             style={{ fontWeight: 500 }}
           >
-            Try Demo Contract
+            Try with Sample Contract
           </button>
         </div>
       </div>

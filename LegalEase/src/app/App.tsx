@@ -220,6 +220,7 @@ export default function App() {
                 analysisMode={analysisMode}
                 onViewInDocument={handleViewInDocument}
                 showAnimations
+                targetLanguage={targetLanguage}
               />
             </div>
           </div>
@@ -243,6 +244,7 @@ export default function App() {
                 analysisMode={analysisMode}
                 onViewInDocument={handleViewInDocument}
                 showAnimations
+                targetLanguage={targetLanguage}
               />
             </div>
           </div>
@@ -267,6 +269,7 @@ export default function App() {
                   analysisMode={analysisMode}
                   onViewInDocument={handleViewInDocument}
                   showAnimations
+                  targetLanguage={targetLanguage}
                 />
               </div>
             )}

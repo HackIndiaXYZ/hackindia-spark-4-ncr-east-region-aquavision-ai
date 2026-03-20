@@ -9,6 +9,7 @@ interface RiskAnalysisPanelProps {
   analysisMode: "demo" | "live" | null;
   onViewInDocument: (clauseId: string) => void;
   showAnimations?: boolean;
+  targetLanguage?: string;
 }
 
 type ClauseSeverity = "critical" | "moderate" | "informational";
@@ -61,16 +62,34 @@ export function RiskAnalysisPanel({
   analysisMode,
   onViewInDocument,
   showAnimations = false,
+  targetLanguage = "en",
 }: RiskAnalysisPanelProps) {
   if (!analysis) {
     return null;
   }
 
+  const t = {
+    liveAnalysis: targetLanguage === "hi" ? "🟢 लाइव AI एनालिसिस" : "🟢 Live AI Analysis",
+    demoMode: targetLanguage === "hi" ? "🟡 डेमो मोड" : "🟡 Demo Mode",
+    demoNote: targetLanguage === "hi" ? "अस्थायी समस्या के कारण डेमो परिणाम दिखा रहे हैं" : "Showing demo results due to temporary issue",
+    confidence: targetLanguage === "hi" ? "कॉन्फिडेंस स्कोर" : "Confidence Score",
+    risksFound: targetLanguage === "hi" ? "जोखिम मिले" : "Risks Found",
+    high: targetLanguage === "hi" ? "हाई" : "high",
+    whatGoesWrong: targetLanguage === "hi" ? "⚠️ क्या गलत हो सकता है?" : "⚠️ What could go wrong?",
+    summaryLabel: targetLanguage === "hi" ? "सारांश (SUMMARY)" : "Summary",
+    simplifiedNote: targetLanguage === "hi" ? "हमने इसे आसान कर दिया है ताकि आप इसे आसानी से समझ सकें।" : "We’ve simplified this so you can understand it easily.",
+    riskBreakdown: targetLanguage === "hi" ? "जोखिम का विवरण" : "Risk Breakdown",
+    priorityNote: targetLanguage === "hi" ? "उच्च प्राथमिकता वाले आइटम विस्तारित हैं" : "High priority items are expanded",
+    catHigh: targetLanguage === "hi" ? "उच्च जोखिम वाली समस्याएं" : "High Risk Issues",
+    catMedium: targetLanguage === "hi" ? "मध्यम जोखिम वाली समस्याएं" : "Moderate Risk Issues",
+    catLow: targetLanguage === "hi" ? "समीक्षा की सिफारिश की गई" : "Review Recommended",
+  };
+
   const riskLevel = scoreToRiskLevel(analysis.riskScore);
   const riskCategories = categoryConfig
     .map((category) => ({
       id: category.id,
-      title: category.title,
+      title: category.id === "high" ? t.catHigh : category.id === "medium" ? t.catMedium : t.catLow,
       isHighPriority: category.isHighPriority,
       clauses: analysis.risks
         .filter((risk) => risk.level === category.level)
@@ -96,6 +115,7 @@ export function RiskAnalysisPanel({
             riskLevel={riskLevel}
             riskScore={analysis.riskScore}
             primaryIssues={primaryIssues}
+            targetLanguage={targetLanguage}
           />
         </div>
 
@@ -111,12 +131,12 @@ export function RiskAnalysisPanel({
                 style={{ fontWeight: 700, letterSpacing: "0.02em" }}
               >
                 {analysisMode === "live"
-                  ? "🟢 Live AI Analysis"
-                  : "🟡 Demo Mode"}
+                  ? t.liveAnalysis
+                  : t.demoMode}
               </span>
               {analysisMode === "demo" && (
                 <span className="text-xs text-muted-foreground">
-                  Showing demo results due to temporary issue
+                  {t.demoNote}
                 </span>
               )}
             </div>
@@ -130,18 +150,18 @@ export function RiskAnalysisPanel({
         <div className="border-b border-border bg-white px-4 py-3 md:px-6 md:py-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-xs text-muted-foreground">Confidence Score</div>
+              <div className="text-xs text-muted-foreground">{t.confidence}</div>
               <div className="text-2xl" style={{ fontWeight: 700 }}>
                 {analysis.confidenceScore}%
               </div>
             </div>
             <div>
-              <div className="text-xs text-muted-foreground">Risks Found</div>
+              <div className="text-xs text-muted-foreground">{t.risksFound}</div>
               <div className="flex items-baseline gap-2">
                 <div className="text-2xl text-red-600" style={{ fontWeight: 700 }}>
                   {totalRisks}
                 </div>
-                <div className="text-sm text-muted-foreground">({highRiskCount} high)</div>
+                <div className="text-sm text-muted-foreground">({highRiskCount} {t.high})</div>
               </div>
             </div>
           </div>
@@ -149,8 +169,8 @@ export function RiskAnalysisPanel({
 
         <div className="border-b border-border bg-white px-4 py-4 md:px-6">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-base md:text-lg" style={{ fontWeight: 600 }}>
-              Real-World Consequences
+            <h3 className="text-base md:text-lg text-amber-900" style={{ fontWeight: 700 }}>
+              {t.whatGoesWrong}
             </h3>
           </div>
           <div className="space-y-2">
@@ -168,24 +188,26 @@ export function RiskAnalysisPanel({
         <div className="border-b border-border bg-white px-4 py-4 md:px-6">
           <div className="space-y-2">
             <div className="text-xs uppercase tracking-[0.08em] text-muted-foreground">
-              Summary
+              {t.summaryLabel}
             </div>
             <p className="text-sm leading-relaxed text-foreground">{analysis.summary}</p>
+            <p className="mt-2 text-xs italic text-muted-foreground">{t.simplifiedNote}</p>
           </div>
         </div>
 
         <div className="p-4 md:p-6">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-base md:text-lg" style={{ fontWeight: 600 }}>
-              Risk Breakdown
+              {t.riskBreakdown}
             </h3>
             <div className="text-xs text-muted-foreground">
-              High priority items are expanded
+              {t.priorityNote}
             </div>
           </div>
           <RiskCategoryAccordion
             categories={riskCategories}
             onViewInDocument={onViewInDocument}
+            targetLanguage={targetLanguage}
           />
         </div>
       </div>

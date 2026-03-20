@@ -21,11 +21,13 @@ interface RiskCategory {
 interface RiskCategoryAccordionProps {
   categories: RiskCategory[];
   onViewInDocument: (clauseId: string) => void;
+  targetLanguage?: string;
 }
 
 export function RiskCategoryAccordion({
   categories,
   onViewInDocument,
+  targetLanguage = "en",
 }: RiskCategoryAccordionProps) {
   // Auto-expand high priority categories
   const defaultOpen = categories
@@ -66,7 +68,7 @@ export function RiskCategoryAccordion({
                   </span>
                   {category.isHighPriority && (
                     <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-700" style={{ fontWeight: 600 }}>
-                      Priority
+                      {targetLanguage === "hi" ? "प्राथमिकता" : "Priority"}
                     </span>
                   )}
                 </div>
@@ -82,6 +84,7 @@ export function RiskCategoryAccordion({
                     {...clause}
                     onViewInDocument={onViewInDocument}
                     delay={index * 100}
+                    targetLanguage={targetLanguage}
                   />
                 ))}
               </div>

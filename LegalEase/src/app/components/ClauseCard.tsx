@@ -9,6 +9,7 @@ interface ClauseCardProps {
   severity: "critical" | "moderate" | "informational";
   onViewInDocument: (id: string) => void;
   delay?: number;
+  targetLanguage?: string;
 }
 
 export function ClauseCard({
@@ -20,26 +21,27 @@ export function ClauseCard({
   severity,
   onViewInDocument,
   delay = 0,
+  targetLanguage = "en",
 }: ClauseCardProps) {
   const severityConfig = {
     critical: {
       border: "border-l-[#ef4444]",
       badge: "bg-red-100 text-[#ef4444]",
-      label: "Critical Risk",
+      label: targetLanguage === "hi" ? "महत्वपूर्ण जोखिम" : "Critical Risk",
       icon: "🔴",
       iconBg: "bg-red-100",
     },
     moderate: {
       border: "border-l-[#f59e0b]",
       badge: "bg-amber-100 text-[#f59e0b]",
-      label: "Moderate Risk",
+      label: targetLanguage === "hi" ? "मध्यम जोखिम" : "Moderate Risk",
       icon: "🟡",
       iconBg: "bg-amber-100",
     },
     informational: {
       border: "border-l-[#3b82f6]",
       badge: "bg-blue-100 text-[#3b82f6]",
-      label: "Review Recommended",
+      label: targetLanguage === "hi" ? "समीक्षा की सिफारिश की गई" : "Review Recommended",
       icon: "🟢",
       iconBg: "bg-blue-100",
     },
@@ -79,7 +81,9 @@ export function ClauseCard({
       <div className="mb-3 rounded-md bg-gray-50 p-3">
         <div className="mb-1 flex items-center gap-1.5 text-xs text-muted-foreground">
           <AlertCircle className="h-3.5 w-3.5" />
-          <span style={{ fontWeight: 600 }}>What this means:</span>
+          <span style={{ fontWeight: 600 }}>
+            {targetLanguage === "hi" ? "इसका क्या मतलब है:" : "What this means:"}
+          </span>
         </div>
         <p className="text-sm leading-relaxed">{description}</p>
       </div>
@@ -90,7 +94,7 @@ export function ClauseCard({
             <span className="mt-0.5 text-base leading-none">⚠️</span>
             <div>
               <span className="mb-1 block text-[10px] uppercase tracking-wider text-amber-900" style={{ fontWeight: 800 }}>
-                Warning: Real-world consequence
+                {targetLanguage === "hi" ? "चेतावनी: वास्तविक दुनिया का परिणाम" : "Warning: Real-world consequence"}
               </span>
               <p className="text-sm text-amber-950" style={{ fontWeight: 500 }}>
                 {consequence}
@@ -103,7 +107,9 @@ export function ClauseCard({
       {/* Technical details SECOND (if provided) */}
       {technicalDetails && (
         <div className="mb-3 text-xs text-muted-foreground">
-          <span style={{ fontWeight: 600 }}>Technical:</span> {technicalDetails}
+          <span style={{ fontWeight: 600 }}>
+            {targetLanguage === "hi" ? "तकनीकी:" : "Technical:"}
+          </span> {technicalDetails}
         </div>
       )}
 
@@ -114,7 +120,7 @@ export function ClauseCard({
         style={{ fontWeight: 600 }}
       >
         <ExternalLink className="h-3.5 w-3.5" />
-        View in Document
+        {targetLanguage === "hi" ? "दस्तावेज़ में देखें" : "View in Document"}
       </button>
     </div>
   );

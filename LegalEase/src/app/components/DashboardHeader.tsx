@@ -36,8 +36,8 @@ export function DashboardHeader({
         </div>
 
         {/* Breadcrumb - centered on desktop, hidden on mobile */}
-        <div className="absolute left-1/2 hidden -translate-x-1/2 text-muted-foreground md:block">
-          {filename || "No document loaded"}
+        <div className="absolute left-1/2 hidden -translate-x-1/2 text-muted-foreground md:block" style={{ fontWeight: 500 }}>
+          {filename || "Understand Your Contract"}
         </div>
 
         {/* Actions */}
@@ -61,13 +61,17 @@ export function DashboardHeader({
               className="flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2 py-1.5 text-sm text-[#4f46e5] transition-colors hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-[#4f46e5] focus:ring-offset-2 md:px-3 md:py-2"
               style={{ fontWeight: 600 }}
             >
-              <span className="hidden md:inline">Try Sample Contract</span>
+              <span className="hidden md:inline">Try with Sample Contract</span>
               <span className="inline md:hidden">Demo</span>
             </button>
           )}
 
           {/* Language Switcher */}
-          <Select.Root
+          <div className="flex items-center gap-2">
+            <span className="hidden text-sm text-muted-foreground md:inline-block" style={{ fontWeight: 500 }}>
+              🌐 Choose Language
+            </span>
+            <Select.Root
             value={targetLanguage}
             onValueChange={onLanguageChange}
             disabled={isTranslating}
@@ -108,6 +112,7 @@ export function DashboardHeader({
               </Select.Content>
             </Select.Portal>
           </Select.Root>
+          </div>
 
           {isTranslating && (
             <span className="hidden text-xs text-muted-foreground animate-pulse md:inline-block">
@@ -130,7 +135,8 @@ export function DashboardHeader({
             style={{ background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)" }}
           >
             <Sparkles className="h-4 w-4" />
-            <span>Analyze</span>
+            <span className="hidden md:inline">Check My Contract</span>
+            <span className="inline md:hidden">Check</span>
           </button>
         </div>
       </div>
