@@ -2,6 +2,7 @@
   <img src="public/favicon.ico" alt="LegalEase Logo" width="80" height="auto" />
   <h1>LegalEase — AI Contract Analyzer</h1>
   <p><strong>HackIndia Spark 4 NCR East Region — Team Aquavision AI</strong></p>
+  <p>🌍 <strong><a href="https://legalease-aquavision.vercel.app">Try the Live Application on Vercel</a></strong> 🌍</p>
   <p>Empowering individuals and SMEs to understand complex legal documents instantly.</p>
 </div>
 
