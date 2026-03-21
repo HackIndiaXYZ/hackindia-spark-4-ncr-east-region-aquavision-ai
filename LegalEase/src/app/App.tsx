@@ -311,17 +311,22 @@ export default function App() {
       await waitForNextPaint();
       await waitForNextPaint();
 
-      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-        import("html2canvas"),
+      const [{ toPng }, { jsPDF }] = await Promise.all([
+        import("html-to-image"),
         import("jspdf"),
       ]);
 
-      const canvas = await html2canvas(reportNode, {
+      const imageData = await toPng(reportNode, {
         backgroundColor: "#ffffff",
-        logging: false,
-        scale: Math.min(window.devicePixelRatio || 1, 2),
-        useCORS: true,
-        windowWidth: reportNode.scrollWidth,
+        pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+      });
+
+      // We need to calculate the dimensions for the image on the PDF.
+      // We'll create a temporary image to get the true pixel dimensions from the data URL.
+      const imgProps = new Image();
+      imgProps.src = imageData;
+      await new Promise((resolve) => {
+        imgProps.onload = resolve;
       });
 
       const pdf = new jsPDF({
@@ -334,8 +339,9 @@ export default function App() {
       const pageHeight = pdf.internal.pageSize.getHeight();
       const printableWidth = pageWidth - margin * 2;
       const printableHeight = pageHeight - margin * 2;
-      const renderedHeight = (canvas.height * printableWidth) / canvas.width;
-      const imageData = canvas.toDataURL("image/png");
+      
+      // Calculate height based on aspect ratio
+      const renderedHeight = (imgProps.height * printableWidth) / imgProps.width;
       const baseName = buildReportFileBaseName(selectedFile?.name || analysis.documentName);
 
       let heightLeft = renderedHeight;
