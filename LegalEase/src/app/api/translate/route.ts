@@ -56,8 +56,14 @@ ${JSON.stringify(analysis)}
 
 async function translateAnalysisWithGoogle(
   analysis: AnalysisResult,
-  targetLanguage: "mr",
+  targetLanguage: string,
 ): Promise<AnalysisResult> {
+  // Map our app language codes to Google Translate codes
+  const googleLangMap: Record<string, string> = {
+    hi: "hi", hinglish: "hi", gu: "gu", ta: "ta", te: "te", mr: "mr",
+  };
+  const googleLang = googleLangMap[targetLanguage] || "hi";
+  const isHinglish = targetLanguage === "hinglish";
   const stringsToTranslate = [
     analysis.summary,
     ...analysis.risks.flatMap((risk) => [risk.title, risk.description, risk.consequence]),
@@ -69,7 +75,9 @@ async function translateAnalysisWithGoogle(
       return text;
     }
 
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLanguage}&dt=t&q=${encodeURIComponent(text)}`;
+    // For Hinglish, request romanization alongside translation
+    const dtParams = isHinglish ? "dt=t&dt=rm" : "dt=t";
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${googleLang}&${dtParams}&q=${encodeURIComponent(text)}`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -77,6 +85,22 @@ async function translateAnalysisWithGoogle(
     }
 
     const payload = await response.json();
+    
+    if (isHinglish) {
+      // Extract romanized text from the response
+      // Google returns romanization in a nested array structure
+      try {
+        // The romanized text is in payload[0][i][3] for each segment
+        const romanized = payload[0]
+          .filter((part: unknown[]) => part && part[3])
+          .map((part: unknown[]) => part[3])
+          .join("");
+        if (romanized.trim()) return romanized;
+      } catch {
+        // Fall through to regular translation if romanization fails
+      }
+    }
+
     return payload[0].map((part: [string]) => part[0]).join("");
   };
 
@@ -150,15 +174,11 @@ export async function POST(request: Request) {
     }
 
     try {
-      const translated =
-        targetLanguage === "hinglish"
-          ? await translateAnalysisToHinglish(analysis)
-          : targetLanguage === "mr"
-          ? await translateAnalysisWithGoogle(analysis, "mr")
-          : await translateAnalysisWithGemini(
-              analysis,
-              targetLanguage as "hi" | "gu" | "ta" | "te",
-            );
+      // Use Gemini specifically for Hinglish to get natural romanized output
+      // Use Google Translate for all other languages (fast, no rate limits)
+      const translated = targetLanguage === "hinglish"
+        ? await translateAnalysisToHinglish(analysis)
+        : await translateAnalysisWithGoogle(analysis, targetLanguage);
 
       return NextResponse.json({
         ok: true,

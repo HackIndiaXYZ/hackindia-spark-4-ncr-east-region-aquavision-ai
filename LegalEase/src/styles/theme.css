@@ -289,3 +289,19 @@
     z-index: 10;
   }
 }
+
+
+body.hide-pdf-for-print object[type="application/pdf"],
+body.hide-pdf-for-print iframe[src*="blob"] {
+  display: none !important;
+}
+
+body.exporting-report [data-export-hidden="true"] {
+  display: none !important;
+}
+
+body.exporting-report #exportable-analysis,
+body.exporting-report #exportable-analysis * {
+  animation: none !important;
+  transition: none !important;
+}

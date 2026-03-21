@@ -135,6 +135,7 @@ export function ClauseCard({
       {canViewInDocument && (
         <button
           onClick={() => onViewInDocument(id)}
+          data-export-hidden="true"
           className="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm text-indigo-600 dark:text-violet-400 transition-all hover:bg-indigo-50 hover:text-indigo-700 dark:hover:bg-violet-500/10 dark:hover:text-violet-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-violet-500 focus:ring-offset-2 dark:focus:ring-offset-[#0B0F19]"
           style={{ fontWeight: 600 }}
         >

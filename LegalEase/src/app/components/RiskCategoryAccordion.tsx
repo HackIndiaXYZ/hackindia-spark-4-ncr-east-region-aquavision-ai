@@ -22,6 +22,7 @@ interface RiskCategoryAccordionProps {
   categories: RiskCategory[];
   onViewInDocument: (clauseId: string) => void;
   canViewInDocument?: boolean;
+  forceExpandAll?: boolean;
   targetLanguage?: string;
 }
 
@@ -29,12 +30,14 @@ export function RiskCategoryAccordion({
   categories,
   onViewInDocument,
   canViewInDocument = false,
+  forceExpandAll = false,
   targetLanguage = "en",
 }: RiskCategoryAccordionProps) {
   // Auto-expand high priority categories
   const defaultOpen = categories
     .filter((cat) => cat.isHighPriority)
     .map((cat) => cat.id);
+  const expandedValues = categories.map((cat) => cat.id);
 
   // Get icon for category count based on severity
   const getCategoryIcon = (clauses: Clause[]) => {
@@ -47,7 +50,12 @@ export function RiskCategoryAccordion({
   };
 
   return (
-    <Accordion.Root type="multiple" defaultValue={defaultOpen} className="space-y-3">
+    <Accordion.Root
+      type="multiple"
+      value={forceExpandAll ? expandedValues : undefined}
+      defaultValue={defaultOpen}
+      className="space-y-3"
+    >
       {categories.map((category, categoryIndex) => {
         const icon = getCategoryIcon(category.clauses);
 
